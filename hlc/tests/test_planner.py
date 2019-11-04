@@ -29,7 +29,7 @@ def test_empty_map_6x6():
         assert value == True
 
 
-def test_one_obsticle_6x6():
+def test_one_obstacle_6x6():
     keys = []
     pos = (0, 0)
 
