@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 sys.path.append('..')
-from controlHigh.planner import plan, add_pos_tuple
+from hlc.planner import plan, add_pos_tuple
 
 def test_empty_map_6x6():
   keys = []
