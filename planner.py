@@ -15,5 +15,5 @@ def add_pos_tuple(t1, t2):
   new_y = t1[1] + t2[1]
   return (new_x, new_y)
 
-def plan(map_dim, edges_blocked, edges_free, current_pos):
+def plan(map_dim, pos_blocked, pos_free, current_pos):
   return []
