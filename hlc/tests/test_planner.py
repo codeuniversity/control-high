@@ -102,8 +102,8 @@ def test_dead_end_6x6():
   all_positions = dict.fromkeys(keys, False)
   all_positions[(0,0)] = True
 
-  # only open pos at [1,0], robot still needs to explore all [0,x] and then walk backwards to explore rest of map
-  plan_output = plan((6,6),np.array([[1,1], [1,2], [1,3], [1,4], [1,5]]), np.array([]), (0,0))
+  # only open pos at [2,0], robot still needs to explore all (0,x) and (1,x) and then walk backwards to explore rest of map
+  plan_output = plan((6,6),np.array([[2,1], [2,2], [2,3], [2,4], [2,5]]), np.array([]), (0,0))
 
   # if position visited change value to True
   for action in plan_output:
