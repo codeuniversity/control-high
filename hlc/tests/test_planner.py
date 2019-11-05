@@ -1,4 +1,4 @@
-from hlc.planner import plan, add_pos_tuple
+from hlc.planner import planner
 import numpy as np
 import sys
 sys.path.append('..')
@@ -17,11 +17,11 @@ def test_empty_map_6x6():
     # visited
     all_positions = dict.fromkeys(keys, False)
     all_positions[(0, 0)] = True
-    plan_output = plan((6, 6), np.array([]), np.array([]), (0, 0))
+    plan_output = planner.plan((6, 6), np.array([]), np.array([]), (0, 0))
 
     # if position visited change value to True
     for action in plan_output:
-        pos = add_pos_tuple(pos, action)
+        pos = planner.add_pos_tuple(pos, action)
         all_positions[pos] = True
 
     # for a map without obstacles the robot needs to visit all positions
@@ -43,11 +43,12 @@ def test_one_obstacle_6x6():
     all_positions = dict.fromkeys(keys, False)
     all_positions[(0, 0)] = True
 
-    plan_output = plan((6, 6), np.array([[1, 2]]), np.array([]), (0, 0))
+    plan_output = planner.plan(
+        (6, 6), np.array([[1, 2]]), np.array([]), (0, 0))
 
     # if position visited change value to True
     for action in plan_output:
-        pos = add_pos_tuple(pos, action)
+        pos = planner.add_pos_tuple(pos, action)
         all_positions[pos] = True
 
     # pos_blocked needs to be False, all other pos True --> robot explored the
@@ -74,12 +75,12 @@ def test_multiple_obsticle_6x6():
     all_positions = dict.fromkeys(keys, False)
     all_positions[(0, 0)] = True
 
-    plan_output = plan((6, 6), np.array(
+    plan_output = planner.plan((6, 6), np.array(
         [[0, 2], [1, 5], [3, 4], [5, 2]]), np.array([]), (0, 0))
 
     # if position visited change value to True
     for action in plan_output:
-        pos = add_pos_tuple(pos, action)
+        pos = planner.add_pos_tuple(pos, action)
         all_positions[pos] = True
 
     # pos_blocked needs to be False, all other pos True --> robot explored the
@@ -114,12 +115,12 @@ def test_dead_end_6x6():
 
     # only open pos at [2,0], robot still needs to explore all (0,x) and (1,x)
     # and then walk backwards to explore rest of map
-    plan_output = plan((6, 6), np.array(
+    plan_output = planner.plan((6, 6), np.array(
         [[2, 1], [2, 2], [2, 3], [2, 4], [2, 5]]), np.array([]), (0, 0))
 
     # if position visited change value to True
     for action in plan_output:
-        pos = add_pos_tuple(pos, action)
+        pos = planner.add_pos_tuple(pos, action)
         all_positions[pos] = True
 
     # pos_blocked needs to be False, all other pos True --> robot explored the
