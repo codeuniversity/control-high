@@ -1,0 +1,3 @@
+[submodule "mhist"]
+	path = mhist
+	url = git@github.com:alexmorten/mhist.git
