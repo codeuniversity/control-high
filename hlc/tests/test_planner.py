@@ -42,7 +42,7 @@ def test_one_obstacle_6x6():
     all_positions = dict.fromkeys(keys, False)
     all_positions[(0, 0)] = True
 
-    plan_output = plan((6, 6), np.array([obstacles]), np.array([]), (0, 0))
+    plan_output = planner.plan((6, 6), np.array([obstacles]), np.array([]), (0, 0))
 
     # if position visited change value to True
     for action in plan_output:
@@ -73,7 +73,7 @@ def test_multiple_obsticle_6x6():
     all_positions = dict.fromkeys(keys, False)
     all_positions[(0, 0)] = True
 
-    plan_output = plan((6, 6), np.array(
+    plan_output = planner.plan((6, 6), np.array(
         [obstacles]), np.array([]), (0, 0))
 
     # if position visited change value to True
@@ -87,6 +87,8 @@ def test_multiple_obsticle_6x6():
         # pos with obsticle, value needs to be False = pos not visited
         if key in obstacles:
             assert value != True
+        else:  # all other pos must be visited
+            assert value == True
 
 
 def test_dead_end_6x6():
@@ -105,7 +107,7 @@ def test_dead_end_6x6():
 
     # only open pos at [2,0], robot still needs to explore all (0,x) and (1,x)
     # and then walk backwards to explore rest of map
-    plan_output = plan((6, 6), np.array([obstacles]), np.array([]), (0, 0))
+    plan_output = planner.plan((6, 6), np.array([obstacles]), np.array([]), (0, 0))
 
     # if position visited change value to True
     for action in plan_output:
@@ -118,6 +120,8 @@ def test_dead_end_6x6():
         # pos with obsticle, value needs to be false = pos not visited
         if key in obstacles:
             assert value != True
+        else:  # all other pos must be visited
+            assert value == True
 
 
 # missing: start position (0,0) is blocked --> new start position or
