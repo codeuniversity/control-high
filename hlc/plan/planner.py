@@ -1,3 +1,5 @@
+from enum import Enum
+
 class Action(Enum):
     FORWARD = (0, 1)
     RIGHT_FORWARD = (1, 1)
@@ -26,8 +28,8 @@ def turn_right():
     pass
 
 
-def plan(grid, current_position):
-    number_of_possible_points = grid.values().count(None)
+def plan_walk_left(grid, current_position):
+    number_of_possible_points = list(grid.values()).count(None)
 
     # Points on map:
     #     None means unexplored
@@ -59,7 +61,9 @@ def plan(grid, current_position):
         if left_point is None and right_point is None and next_point is not None:
             turn_left()
             move_one_unit_forward()
+            # add action to plan
             number_of_possible_points -= 1
+
             while next_point is None:
                 move_one_unit_forward()
                 number_of_possible_points -= 1
@@ -102,3 +106,7 @@ def plan(grid, current_position):
     plan = [(0, 1), (1, 1)]
 
     return plan
+
+
+def plan(grid, current_position):
+    return []
