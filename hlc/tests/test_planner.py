@@ -41,9 +41,9 @@ def test_one_obstacle_6x6():
     grid = dict.fromkeys(keys_grid, None)
 
     # set obstacle position to False
-    for key, value in grid.items():
+    for key in grid:
         if key in obstacles:
-            value = False
+            grid[key] = False
 
     # set start position to explored
     grid[start_pos] = True
@@ -76,9 +76,9 @@ def test_multiple_obsticle_6x6():
     grid = dict.fromkeys(keys_grid, None)
 
     # set obstacle position to False
-    for key, value in grid.items():
+    for key in grid:
         if key in obstacles:
-            value = False
+            grid[key] = False
 
     # set start position to explored
     grid[start_pos] = True
@@ -112,9 +112,9 @@ def test_dead_end_6x6():
     grid = dict.fromkeys(keys_grid, None)
 
     # set obstacle position to False
-    for key, value in grid.items():
+    ffor key in grid:
         if key in obstacles:
-            value = False
+            grid[key] = False
 
     # set start position to explored
     grid[start_pos] = True
