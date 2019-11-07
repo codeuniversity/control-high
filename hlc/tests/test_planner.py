@@ -5,6 +5,8 @@ import numpy as np
 def test_empty_map_6x6():
     keys_grid = []
     start_pos = (0, 0)
+    pos = (0, 0)
+    grid_dimension = (6, 6)
 
     # create the grid as a dictionary
     # blocked - False, unexplored - None, explored - True
@@ -16,7 +18,7 @@ def test_empty_map_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, start_pos)
+    plan_output = planner.plan(grid, grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
     for action in plan_output:
@@ -31,6 +33,8 @@ def test_empty_map_6x6():
 def test_one_obstacle_6x6():
     keys_grid = []
     start_pos = (0, 0)
+    pos = (0, 0)
+    grid_dimension = (6, 6)
     obstacles = [(1,2)]
 
     # create the grid as a dictionary
@@ -48,7 +52,7 @@ def test_one_obstacle_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, start_pos)
+    plan_output = planner.plan(grid, grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
     for action in plan_output:
@@ -66,6 +70,8 @@ def test_one_obstacle_6x6():
 def test_multiple_obsticle_6x6():
     keys_grid = []
     start_pos = (0, 0)
+    pos = (0, 0)
+    grid_dimension = (6, 6)
     obstacles = [(2, 1), (3, 4), (5, 1), (5, 4)]
 
     # create the grid as a dictionary
@@ -83,7 +89,7 @@ def test_multiple_obsticle_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, (0, 0))
+    plan_output = planner.plan(grid, grid_dimension, (0, 0))
 
     # execute the actions and set explored pos to True
     for action in plan_output:
@@ -101,6 +107,8 @@ def test_multiple_obsticle_6x6():
 def test_dead_end_6x6():
     keys_grid = []
     start_pos = (0, 0)
+    pos = (0, 0)
+    grid_dimension = (6, 6)
     obstacles = [(2, 1), (2, 2), (2, 3), (2, 4), (2, 5)]
 
     # create the grid as a dictionary
@@ -119,7 +127,7 @@ def test_dead_end_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, (0, 0))
+    plan_output = planner.plan(grid, grid_dimension, (0, 0))
 
     # execute the actions and set explored pos to True
     for action in plan_output:

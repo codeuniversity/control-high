@@ -1,19 +1,84 @@
-from enum import Enum
-
-class Action(Enum):
-    FORWARD = (0, 1)
-    RIGHT_FORWARD = (1, 1)
-    RIGHT = (1, 0)
-    RIGHT_BACKWARD = (1, -1)
-    BACKWARD = (0, -1)
-    LEFT_BACKWARD = (-1, -1)
-    LEFT = (-1, 0)
-    LEFT_FORWARD = (-1, 1)
+FORWARD = (0, 1)
+RIGHT_FORWARD = (1, 1)
+RIGHT = (1, 0)
+RIGHT_BACKWARD = (1, -1)
+BACKWARD = (0, -1)
+LEFT_BACKWARD = (-1, -1)
+LEFT = (-1, 0)
+LEFT_FORWARD = (-1, 1)
 
 def add_pos_tuple(t1, t2):
     new_x = t1[0] + t2[0]
     new_y = t1[1] + t2[1]
     return (new_x, new_y)
+
+def sub_pos_tuple(t1, t2):
+    new_x = t1[0] - t2[0]
+    new_y = t1[1] - t2[1]
+    return (new_x, new_y)
+
+
+def layer_pos(grid_dimension, layer):
+    left_layer = []
+    right_layer = []
+    top_layer = []
+    bottom_layer = []
+
+    for i in range(grid_dimension[1]):
+        left_layer.append((layer, i))
+
+    for j in range(grid_dimension[1]):
+        right_layer.append(grid_dimension[1] - layer, j)
+
+    for k in range(grid_dimension[0]):
+        top_layer.append(k, grid_dimension[0] - layer)
+
+    for l in range(grid_dimension[0]):
+        bottom_layer.append(l, layer)
+
+
+def update_pos(pos, action):
+    new_pos = add_pos_tuple(pos, action)
+    return new_pos
+
+
+def plan(grid, grid_dimension:(int, int), current_pos):
+
+    layer = 0
+    pos = (0, 0)
+    start_pos = pos
+    plan =  []
+    orientation = FORWARD
+
+    max_layer = max(grid_dimension)/2
+
+    while layer != max_layer:
+
+        plan.append(orientation)
+        pos = update_pos(pos, orientation)
+
+        if pos == start_pos:
+            plan.append(RIGHT_FORWARD)
+            pos = add_pos_tuple(pos, RIGHT_FORWARD)
+            layer += 1
+            start_pos = pos
+            orientation = FORWARD
+        elif pos[1] == layer and pos[0] == grid_dimension[0]-layer:
+            orientation = LEFT
+        elif pos[0] == grid_dimension[0]-layer and pos[1] == grid_dimension[1]-layer:
+            orientation = BACKWARD
+        elif pos[1] == grid_dimension[1]-layer and pos[0] == layer:
+            orientation = RIGHT
+
+
+    return plan
+
+
+
+
+
+
+
 
 
 def move_one_unit_forward():
@@ -108,5 +173,3 @@ def plan_walk_left(grid, current_position):
     return plan
 
 
-def plan(grid, current_position):
-    return []
