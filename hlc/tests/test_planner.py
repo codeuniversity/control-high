@@ -112,7 +112,7 @@ def test_dead_end_6x6():
     grid = dict.fromkeys(keys_grid, None)
 
     # set obstacle position to False
-    ffor key in grid:
+    for key in grid:
         if key in obstacles:
             grid[key] = False
 
