@@ -47,3 +47,6 @@ class Receiver(Process):
             elif message.name == self.gait_channel:
                 self.gait_queue.put(
                     {'ts': measurement.ts, 'value': measurement.value})
+            else:
+                raise ValueError(
+                    "given channel Name doesn't match message-channel!")
