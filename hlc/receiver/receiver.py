@@ -17,7 +17,6 @@ class Receiver(Process):
             self, map_queue: Queue, pos_queue: Queue, gait_queue: Queue,
             map_channel: str, pos_channel: str, gait_channel: str,
             daemon=False, name='receiver-process'):
-        # super().__init__(group=None, target=None, name=name, args=None, daemon=daemon)
         super().__init__()
         self.map_queue = map_queue
         self.pos_queue = pos_queue
