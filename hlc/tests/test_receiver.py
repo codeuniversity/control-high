@@ -22,13 +22,13 @@ class SLAMMock():
     def _generate_point(self):
         x = random.randint(0, 255)
         y = random.randint(0, 255)
-        point = {'ts': int(time.time()), 'value': bytes([x, y])}
+        point = {'ts': int(time.time()), 'value': "{},{}".format(x,y).encode()}
         return point
 
     def push_position(self):
         point = self._generate_point()
         measurement = Measurement(
-            raw=Raw(ts=point['ts'], value=point['value']))
+            raw=Raw(value=point['value']))
         stub.Store(MeasurementMessage(
             name=self.position_channel, measurement=measurement))
         return point
@@ -39,10 +39,9 @@ class SLAMMock():
         for i in range(20):
             p = self._generate_point()
             m = MeasurementMessage(name=self.map_channel,
-                                   measurement=Measurement(raw=Raw(ts=p['ts'], value=p['value'])))
+                                   measurement=Measurement(raw=Raw(value=p['value'])))
             points.append(p)
-            messages.append(m)
-        stub.StoreStream(iter(messages))
+            stub.Store(m)
         return points
 
 
@@ -66,7 +65,7 @@ class GaitMock():
     def push_feedback(self):
         feedback = self._generate_feedback()
         measurement = Measurement(
-            raw=Raw(ts=feedback['ts'], value=feedback['value']))
+            raw=Raw(value=feedback['value']))
         stub.Store(MeasurementMessage(name=self.feedback_channel,
                                       measurement=measurement))
         return feedback
@@ -87,31 +86,29 @@ def test_base_case():
     pos_channel = 'position_updates'
     gait_channel = 'gait_feedback'
 
-    p = Receiver(map_queue, pos_queue, gait_queue,
+    process = Receiver(map_queue, pos_queue, gait_queue,
                  map_channel, pos_channel, gait_channel)
-    p.start()
+    process.start()
+    time.sleep(0.5)
 
     slam_mock = SLAMMock(map_channel, pos_channel)
     gait_mock = GaitMock(gait_channel)
 
-    position = slam_mock.push_position()
     map_update = slam_mock.push_20points()
     gait_feedback = gait_mock.push_feedback()
+    position = slam_mock.push_position()
 
-    time.sleep(1)
+    time.sleep(0.5)
 
-    # assert pos_queue.qsize() == 1
     assert map_queue.qsize() == 20
     assert gait_queue.qsize() == 1
+    assert pos_queue.qsize() == 1
 
-    assert pos_queue.get() == position
-    assert gait_queue.get() == gait_feedback
+    assert pos_queue.get()['value'] == position['value']
+    assert gait_queue.get()['value'] == gait_feedback['value']
 
-    for p in map_update[::-1]:
-        assert map_queue.get() == p
+    for p in map_update:
+        assert map_queue.get()['value'] == p['value']
 
-    p.terminate()
+    process.terminate()
 
-
-def test_multiqueue():
-    pass
