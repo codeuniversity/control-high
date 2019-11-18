@@ -1,58 +1,66 @@
-from hlc.planner import planner
+from hlc.plan import planner
 import numpy as np
 
 
 def test_empty_map_6x6():
-    keys = []
+    keys_grid = []
+    start_pos = (0, 0)
     pos = (0, 0)
+    grid_dimension = (6, 6)
 
-    # create all keys aka all position in the grid
-    for i in range(6):
-        for j in range(6):
-            keys.append((i, j))
+    # create the grid as a dictionary
+    # blocked - False, unexplored - None, explored - True
+    for x in range(6):
+        for y in range(6):
+            keys_grid.append((x, y))
+    grid = dict.fromkeys(keys_grid, None)
 
-    # create dic with all possible position, set value to False = pos not
-    # visited
-    all_positions = dict.fromkeys(keys, False)
-    all_positions[(0, 0)] = True
-    plan_output = planner.plan((6, 6), np.array([]), np.array([]), (0, 0))
+    # set start position to explored
+    grid[start_pos] = True
 
-    # if position visited change value to True
+    plan_output = planner.plan(grid, grid_dimension, start_pos)
+
+    # execute the actions and set explored pos to True
     for action in plan_output:
         pos = planner.add_pos_tuple(pos, action)
-        all_positions[pos] = True
+        grid[pos] = True
 
     # for a map without obstacles the robot needs to visit all positions
-    for value in all_positions.values():
+    for value in grid.values():
         assert value == True
 
 
 def test_one_obstacle_6x6():
-    keys = []
+    keys_grid = []
+    start_pos = (0, 0)
     pos = (0, 0)
+    grid_dimension = (6, 6)
     obstacles = [(1,2)]
 
-    # create all keys aka all position in the grid
-    for i in range(6):
-        for j in range(6):
-            keys.append((i, j))
+    # create the grid as a dictionary
+    # blocked - False, unexplored - None, explored - True
+    for x in range(6):
+        for y in range(6):
+            keys_grid.append((x, y))
+    grid = dict.fromkeys(keys_grid, None)
 
-    # create dic with all possible position, set value to False = pos not
-    # visited
-    all_positions = dict.fromkeys(keys, False)
-    all_positions[(0, 0)] = True
+    # set obstacle position to False
+    for key in grid:
+        if key in obstacles:
+            grid[key] = False
 
-    plan_output = planner.plan((6, 6), np.array([obstacles]), np.array([]), (0, 0))
+    # set start position to explored
+    grid[start_pos] = True
 
-    # if position visited change value to True
+    plan_output = planner.plan(grid, grid_dimension, start_pos)
+
+    # execute the actions and set explored pos to True
     for action in plan_output:
         pos = planner.add_pos_tuple(pos, action)
-        all_positions[pos] = True
+        grid[pos] = True
 
-    # pos_blocked needs to be False, all other pos True --> robot explored the
-    # whole map with one obstacle
-    for key, value in all_positions.items():
-            # pos with obsticle, value needs to be false = pos not visited
+    for key, value in grid.items():
+        # pos with obsticle, value needs to be false = pos not visited
         if key in obstacles:
             assert value != True
         else:  # all other pos must be visited
@@ -60,30 +68,35 @@ def test_one_obstacle_6x6():
 
 
 def test_multiple_obsticle_6x6():
-    keys = []
+    keys_grid = []
+    start_pos = (0, 0)
     pos = (0, 0)
-    obstacles = [(0, 2), (1, 5), (3, 4), (5, 2)]
-    # create all keys aka all position in the grid
-    for i in range(6):
-        for j in range(6):
-            keys.append((i, j))
+    grid_dimension = (6, 6)
+    obstacles = [(2, 1), (3, 4), (5, 1), (5, 4)]
 
-    # create dic with all possible position, set value to False = pos not
-    # visited
-    all_positions = dict.fromkeys(keys, False)
-    all_positions[(0, 0)] = True
+    # create the grid as a dictionary
+    # blocked - False, unexplored - None, explored - True
+    for x in range(6):
+        for y in range(6):
+            keys_grid.append((x, y))
+    grid = dict.fromkeys(keys_grid, None)
 
-    plan_output = planner.plan((6, 6), np.array(
-        [obstacles]), np.array([]), (0, 0))
+    # set obstacle position to False
+    for key in grid:
+        if key in obstacles:
+            grid[key] = False
 
-    # if position visited change value to True
+    # set start position to explored
+    grid[start_pos] = True
+
+    plan_output = planner.plan(grid, grid_dimension, (0, 0))
+
+    # execute the actions and set explored pos to True
     for action in plan_output:
         pos = planner.add_pos_tuple(pos, action)
-        all_positions[pos] = True
+        grid[pos] = True
 
-    # pos_blocked needs to be False, all other pos True --> robot explored the
-    # whole map with multiple obstacles
-    for key, value in all_positions.items():
+    for key, value in grid.items():
         # pos with obsticle, value needs to be False = pos not visited
         if key in obstacles:
             assert value != True
@@ -92,37 +105,38 @@ def test_multiple_obsticle_6x6():
 
 
 def test_dead_end_6x6():
-    keys = []
+    keys_grid = []
+    start_pos = (0, 0)
     pos = (0, 0)
+    grid_dimension = (6, 6)
     obstacles = [(2, 1), (2, 2), (2, 3), (2, 4), (2, 5)]
-    # create all keys aka all position in the grid
-    for i in range(6):
-        for j in range(6):
-            keys.append((i, j))
 
-    # create dic with all possible position, set value to False = pos not
-    # visited
-    all_positions = dict.fromkeys(keys, False)
-    all_positions[(0, 0)] = True
+    # create the grid as a dictionary
+    # blocked - False, unexplored - None, explored - True
+    for x in range(6):
+        for y in range(6):
+            keys_grid.append((x, y))
 
-    # only open pos at [2,0], robot still needs to explore all (0,x) and (1,x)
-    # and then walk backwards to explore rest of map
-    plan_output = planner.plan((6, 6), np.array([obstacles]), np.array([]), (0, 0))
+    grid = dict.fromkeys(keys_grid, None)
 
-    # if position visited change value to True
+    # set obstacle position to False
+    for key in grid:
+        if key in obstacles:
+            grid[key] = False
+
+    # set start position to explored
+    grid[start_pos] = True
+
+    plan_output = planner.plan(grid, grid_dimension, (0, 0))
+
+    # execute the actions and set explored pos to True
     for action in plan_output:
         pos = planner.add_pos_tuple(pos, action)
-        all_positions[pos] = True
+        grid[pos] = True
 
-    # pos_blocked needs to be False, all other pos True --> robot explored the
-    # whole map with one dead end
-    for key, value in all_positions.items():
+    for key, value in grid.items():
         # pos with obsticle, value needs to be false = pos not visited
         if key in obstacles:
             assert value != True
         else:  # all other pos must be visited
             assert value == True
-
-
-# missing: start position (0,0) is blocked --> new start position or
-# executor panic & replanning?
