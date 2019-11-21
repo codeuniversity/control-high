@@ -54,6 +54,38 @@ def test_empty_map_6x6():
     for value in grid.values():
         assert value == True
 
+def test_empty_map_4x5():
+    keys_grid = []
+    start_pos = (0, 0)
+    pos = (0, 0)
+    grid_dimension = (4, 5)
+
+    # create the grid as a dictionary
+    # blocked - False, unexplored - None, explored - True
+    for x in range(5):
+        for y in range(6):
+            keys_grid.append((x, y))
+    grid = dict.fromkeys(keys_grid, None)
+
+    # set start position to explored
+    grid[start_pos] = True
+
+    plan_output = planner.plan(grid, grid_dimension, start_pos)
+
+    # execute the actions and set explored pos to True
+    orientation = Orientation.FORWARD
+    for action in plan_output:
+        if action == "turn right 90degree":
+            orientation = change_orientation(orientation)
+            grid[pos] = True
+        elif action == "move forward":
+            pos = planner.add_pos_tuple(pos, orientation.value)
+            grid[pos] = True
+
+
+    # for a map without obstacles the robot needs to visit all positions
+    for value in grid.values():
+        assert value == True
 
 def test_one_obstacle_6x6():
     keys_grid = []
