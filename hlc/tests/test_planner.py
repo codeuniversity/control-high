@@ -44,7 +44,6 @@ def test_empty_map_6x6():
     for action in plan_output:
         if action == "turn right 90degree":
             orientation = change_orientation(orientation)
-            pos = planner.add_pos_tuple(pos, orientation.value)
             grid[pos] = True
         elif action == "move forward":
             pos = planner.add_pos_tuple(pos, orientation.value)
@@ -82,8 +81,12 @@ def test_one_obstacle_6x6():
 
     # execute the actions and set explored pos to True
     for action in plan_output:
-        pos = planner.add_pos_tuple(pos, action)
-        grid[pos] = True
+        if action == "turn right 90degree":
+            orientation = change_orientation(orientation)
+            grid[pos] = True
+        elif action == "move forward":
+            pos = planner.add_pos_tuple(pos, orientation.value)
+            grid[pos] = True
 
     for key, value in grid.items():
         # pos with obsticle, value needs to be false = pos not visited
@@ -119,8 +122,12 @@ def test_multiple_obsticle_6x6():
 
     # execute the actions and set explored pos to True
     for action in plan_output:
-        pos = planner.add_pos_tuple(pos, action)
-        grid[pos] = True
+        if action == "turn right 90degree":
+            orientation = change_orientation(orientation)
+            grid[pos] = True
+        elif action == "move forward":
+            pos = planner.add_pos_tuple(pos, orientation.value)
+            grid[pos] = True
 
     for key, value in grid.items():
         # pos with obsticle, value needs to be False = pos not visited
@@ -157,8 +164,12 @@ def test_dead_end_6x6():
 
     # execute the actions and set explored pos to True
     for action in plan_output:
-        pos = planner.add_pos_tuple(pos, action)
-        grid[pos] = True
+        if action == "turn right 90degree":
+            orientation = change_orientation(orientation)
+            grid[pos] = True
+        elif action == "move forward":
+            pos = planner.add_pos_tuple(pos, orientation.value)
+            grid[pos] = True
 
     for key, value in grid.items():
         # pos with obsticle, value needs to be false = pos not visited
