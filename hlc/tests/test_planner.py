@@ -1,5 +1,24 @@
 from hlc.plan import planner
+from enum import Enum
 import numpy as np
+
+class Orientation(Enum):
+    FORWARD = (0,1)
+    RIGHT = (1, 0)
+    BACKWARD = (0, -1)
+    LEFT = (-1, 0)
+
+def change_orientation(orientation):
+    if orientation.name == "FORWARD":
+        orientation = Orientation.RIGHT
+    elif orientation.name == "RIGHT":
+        orientation = Orientation.BACKWARD
+    elif orientation.name == "BACKWARD":
+        orientation  = Orientation.LEFT
+    elif orientation.name == "LEFT":
+        orientation = Orientation.FORWARD
+
+    return orientation
 
 
 def test_empty_map_6x6():
@@ -21,9 +40,16 @@ def test_empty_map_6x6():
     plan_output = planner.plan(grid, grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
+    orientation = Orientation.FORWARD
     for action in plan_output:
-        pos = planner.add_pos_tuple(pos, action)
-        grid[pos] = True
+        if action == "turn right 90degree":
+            orientation = change_orientation(orientation)
+            pos = planner.add_pos_tuple(pos, orientation.value)
+            grid[pos] = True
+        elif action == "move forward":
+            pos = planner.add_pos_tuple(pos, orientation.value)
+            grid[pos] = True
+
 
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
