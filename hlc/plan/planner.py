@@ -52,20 +52,24 @@ def plan(grid, grid_dimension:(int, int), start_pos = (0,0), layer = 0, orientat
 
     while layer != max_layer:
 
-        plan.append(orientation)
+        plan.append("move forward")
         pos = update_pos(pos, orientation)
 
-        if pos == start_pos:
-            plan.append(RIGHT_FORWARD)
-            pos = add_pos_tuple(pos, RIGHT_FORWARD)
+        if pos == add_pos_tuple(start_pos, (1,0)):
+            plan.append("turn right 90degree")
+            plan.append("move forward")
+            pos = add_pos_tuple(pos, FORWARD)
             layer += 1
             start_pos = pos
             orientation = FORWARD
         elif pos[1] == layer and pos[0] == grid_dimension[0]-layer:
+            plan.append("turn right 90degree")
             orientation = LEFT
         elif pos[0] == grid_dimension[0]-layer and pos[1] == grid_dimension[1]-layer:
+            plan.append("turn right 90degree")
             orientation = BACKWARD
         elif pos[1] == grid_dimension[1]-layer and pos[0] == layer:
+            plan.append("turn right 90degree")
             orientation = RIGHT
 
 
