@@ -1,3 +1,5 @@
+import math
+
 FORWARD = (0, 1)
 RIGHT_FORWARD = (1, 1)
 RIGHT = (1, 0)
@@ -48,7 +50,8 @@ def plan(grid, grid_dimension:(int, int), start_pos = (0,0), layer = 0, orientat
     pos = start_pos
     plan =  []
 
-    max_layer = max(grid_dimension)/2
+    max_layer = math.floor(max(grid_dimension)/2)
+    max_layer = int(max_layer)
 
     while layer != max_layer:
 
