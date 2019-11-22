@@ -9,10 +9,15 @@ LEFT_BACKWARD = (-1, -1)
 LEFT = (-1, 0)
 LEFT_FORWARD = (-1, 1)
 
+MOVE_FORWARD = 'move forward'
+TURN_RIGHT = 'turn right 90degree'
+
+
 def add_pos_tuple(t1, t2):
     new_x = t1[0] + t2[0]
     new_y = t1[1] + t2[1]
     return (new_x, new_y)
+
 
 def sub_pos_tuple(t1, t2):
     new_x = t1[0] - t2[0]
@@ -53,27 +58,37 @@ def plan(grid, grid_dimension:(int, int), start_pos = (0,0), layer = 0, orientat
     max_layer = math.floor(max(grid_dimension)/2)
     max_layer = int(max_layer)
 
-    while layer != max_layer:
+    while layer < max_layer:
 
-        plan.append("move forward")
+        plan.append(MOVE_FORWARD)
         pos = update_pos(pos, orientation)
 
         if pos == add_pos_tuple(start_pos, (1,0)):
-            plan.append("turn right 90degree")
-            plan.append("move forward")
+            plan.append(TURN_RIGHT)
+            plan.append(MOVE_FORWARD)
             pos = add_pos_tuple(pos, FORWARD)
             layer += 1
             start_pos = pos
             orientation = FORWARD
         elif pos[1] == layer and pos[0] == grid_dimension[0]-layer:
-            plan.append("turn right 90degree")
+            plan.append(TURN_RIGHT)
             orientation = LEFT
         elif pos[0] == grid_dimension[0]-layer and pos[1] == grid_dimension[1]-layer:
-            plan.append("turn right 90degree")
+            plan.append(TURN_RIGHT)
             orientation = BACKWARD
         elif pos[1] == grid_dimension[1]-layer and pos[0] == layer:
-            plan.append("turn right 90degree")
+            plan.append(TURN_RIGHT)
             orientation = RIGHT
 
+    if grid_dimension[0] != grid_dimension[1] and layer == max_layer:
+        if grid_dimension[0] % 2 == 1:
+            plan.append(TURN_RIGHT)
+            while pos[0] < grid_dimension[0]-layer:
+                plan.append(MOVE_FORWARD)
+                pos = add_pos_tuple(pos, RIGHT)
+        else:
+            while pos[1] < grid_dimension[1]-layer:
+                plan.append(MOVE_FORWARD)
+                pos = add_pos_tuple(pos, FORWARD)
 
     return plan
