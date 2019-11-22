@@ -10,7 +10,7 @@ LEFT = (-1, 0)
 LEFT_FORWARD = (-1, 1)
 
 MOVE_FORWARD = 'move forward'
-TURN_RIGHT = 'turn right 90degree'
+TURN_RIGHT = 'turn right 90 degrees'
 
 
 def add_pos_tuple(t1, t2):
