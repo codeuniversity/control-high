@@ -121,14 +121,14 @@ def test_one_obstacle_6x6():
             grid[pos] = True
 
     for key, value in grid.items():
-        # pos with obsticle, value needs to be false = pos not visited
+        # pos with obstacle, value needs to be false = pos not visited
         if key in obstacles:
             assert value != True
         else:  # all other pos must be visited
             assert value == True
 
 
-def test_multiple_obsticle_6x6():
+def test_multiple_obstacle_6x6():
     keys_grid = []
     start_pos = (0, 0)
     pos = (0, 0)
@@ -162,7 +162,7 @@ def test_multiple_obsticle_6x6():
             grid[pos] = True
 
     for key, value in grid.items():
-        # pos with obsticle, value needs to be False = pos not visited
+        # pos with obstacle, value needs to be False = pos not visited
         if key in obstacles:
             assert value != True
         else:  # all other pos must be visited
@@ -204,7 +204,7 @@ def test_dead_end_6x6():
             grid[pos] = True
 
     for key, value in grid.items():
-        # pos with obsticle, value needs to be false = pos not visited
+        # pos with obstacle, value needs to be false = pos not visited
         if key in obstacles:
             assert value != True
         else:  # all other pos must be visited
