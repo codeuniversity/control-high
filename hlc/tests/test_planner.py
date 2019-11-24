@@ -37,7 +37,7 @@ def test_empty_map_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, grid_dimension, start_pos)
+    plan_output = planner.plan(grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
     orientation = Orientation.FORWARD
@@ -70,7 +70,7 @@ def test_empty_map_4x5():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, grid_dimension, start_pos)
+    plan_output = planner.plan(grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
     orientation = Orientation.FORWARD
@@ -109,7 +109,7 @@ def test_one_obstacle_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, grid_dimension, start_pos)
+    plan_output = planner.plan(grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
     for action in plan_output:
@@ -150,7 +150,7 @@ def test_multiple_obstacle_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, grid_dimension, (0, 0))
+    plan_output = planner.plan(grid_dimension, (0, 0))
 
     # execute the actions and set explored pos to True
     for action in plan_output:
@@ -192,7 +192,7 @@ def test_dead_end_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid, grid_dimension, (0, 0))
+    plan_output = planner.plan(grid_dimension, (0, 0))
 
     # execute the actions and set explored pos to True
     for action in plan_output:

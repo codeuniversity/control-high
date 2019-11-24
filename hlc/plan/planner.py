@@ -53,7 +53,7 @@ def layer_pos(grid_dimension, layer):
     return left_layer, right_layer, top_layer, bottom_layer
 
 
-def plan(grid, grid_dimension, start_pos = (0,0), layer = 0, orientation = FORWARD):
+def plan(grid_dimension, start_pos = (0,0), layer = 0, orientation = FORWARD):
     pos = Position(start_pos)
     plan =  []
 
