@@ -8,7 +8,7 @@ class Orientation(Enum):
     BACKWARD = (0, -1)
     LEFT = (-1, 0)
 
-def change_orientation(orientation):
+def right_turn(orientation):
     if orientation.name == "FORWARD":
         orientation = Orientation.RIGHT
     elif orientation.name == "RIGHT":
@@ -43,7 +43,7 @@ def test_empty_map_6x6():
     orientation = Orientation.FORWARD
     for action in plan_output:
         if action == planner.TURN_RIGHT:
-            orientation = change_orientation(orientation)
+            orientation = right_turn(orientation)
             grid[pos] = True
         elif action == planner.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
@@ -76,7 +76,7 @@ def test_empty_map_4x5():
     orientation = Orientation.FORWARD
     for action in plan_output:
         if action == planner.TURN_RIGHT:
-            orientation = change_orientation(orientation)
+            orientation = right_turn(orientation)
             grid[pos] = True
         elif action == planner.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
@@ -114,7 +114,7 @@ def test_one_obstacle_6x6():
     # execute the actions and set explored pos to True
     for action in plan_output:
         if action == planner.TURN_RIGHT:
-            orientation = change_orientation(orientation)
+            orientation = right_turn(orientation)
             grid[pos] = True
         elif action == planner.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
@@ -155,7 +155,7 @@ def test_multiple_obstacle_6x6():
     # execute the actions and set explored pos to True
     for action in plan_output:
         if action == planner.TURN_RIGHT:
-            orientation = change_orientation(orientation)
+            orientation = right_turn(orientation)
             grid[pos] = True
         elif action == planner.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
@@ -197,7 +197,7 @@ def test_dead_end_6x6():
     # execute the actions and set explored pos to True
     for action in plan_output:
         if action == planner.TURN_RIGHT:
-            orientation = change_orientation(orientation)
+            orientation = right_turn(orientation)
             grid[pos] = True
         elif action == planner.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
