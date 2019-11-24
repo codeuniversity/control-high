@@ -55,8 +55,7 @@ def plan(grid, grid_dimension, start_pos = (0,0), layer = 0, orientation = FORWA
     pos = start_pos
     plan =  []
 
-    max_layer = math.floor(max(grid_dimension)/2)
-    max_layer = int(max_layer)
+    max_layer = max(grid_dimension) // 2
 
     while layer < max_layer:
 
