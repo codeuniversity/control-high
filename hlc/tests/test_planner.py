@@ -49,10 +49,10 @@ def test_empty_map_6x6():
             pos.update(orientation.value)
             grid[pos.current()] = True
 
-
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
         assert value == True
+
 
 def test_empty_map_4x5():
     keys_grid = []
@@ -87,12 +87,13 @@ def test_empty_map_4x5():
     for value in grid.values():
         assert value == True
 
+
 def test_one_obstacle_6x6():
     keys_grid = []
     start_pos = (0, 0)
     pos = (0, 0)
     grid_dimension = (6, 6)
-    obstacles = [(1,2)]
+    obstacles = [(1, 2)]
 
     # create the grid as a dictionary
     # blocked - False, unexplored - None, explored - True
