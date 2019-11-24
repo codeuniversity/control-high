@@ -62,7 +62,7 @@ def plan(grid, grid_dimension, start_pos = (0,0), layer = 0, orientation = FORWA
         plan.append(MOVE_FORWARD)
         pos = update_pos(pos, orientation)
 
-        if pos == add_pos_tuple(start_pos, (1,0)):
+        if pos == add_pos_tuple(start_pos, (1, 0)):
             plan.append(TURN_RIGHT)
             plan.append(MOVE_FORWARD)
             pos = add_pos_tuple(pos, FORWARD)
