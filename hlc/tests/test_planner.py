@@ -24,7 +24,7 @@ def right_turn(orientation):
 def test_empty_map_6x6():
     keys_grid = []
     start_pos = (0, 0)
-    pos = (0, 0)
+    pos = planner.Position(start_pos)
     grid_dimension = (6, 6)
 
     # create the grid as a dictionary
@@ -44,10 +44,10 @@ def test_empty_map_6x6():
     for action in plan_output:
         if action == planner.TURN_RIGHT:
             orientation = right_turn(orientation)
-            grid[pos] = True
+            grid[pos.current()] = True
         elif action == planner.MOVE_FORWARD:
-            pos = planner.add_pos_tuple(pos, orientation.value)
-            grid[pos] = True
+            pos.update(orientation.value)
+            grid[pos.current()] = True
 
 
     # for a map without obstacles the robot needs to visit all positions
@@ -57,7 +57,7 @@ def test_empty_map_6x6():
 def test_empty_map_4x5():
     keys_grid = []
     start_pos = (0, 0)
-    pos = (0, 0)
+    pos = planner.Position(start_pos)
     grid_dimension = (4, 5)
 
     # create the grid as a dictionary
@@ -77,10 +77,10 @@ def test_empty_map_4x5():
     for action in plan_output:
         if action == planner.TURN_RIGHT:
             orientation = right_turn(orientation)
-            grid[pos] = True
+            grid[pos.current()] = True
         elif action == planner.MOVE_FORWARD:
-            pos = planner.add_pos_tuple(pos, orientation.value)
-            grid[pos] = True
+            pos.update(orientation.value)
+            grid[pos.current()] = True
 
 
     # for a map without obstacles the robot needs to visit all positions
