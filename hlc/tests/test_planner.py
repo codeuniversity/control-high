@@ -29,8 +29,8 @@ def test_empty_map_6x6():
 
     # create the grid as a dictionary
     # blocked - False, unexplored - None, explored - True
-    for x in range(7):
-        for y in range(7):
+    for x in range(grid_dimension[0]):
+        for y in range(grid_dimension[1]):
             keys_grid.append((x, y))
     grid = dict.fromkeys(keys_grid, None)
 
@@ -62,8 +62,8 @@ def test_empty_map_4x5():
 
     # create the grid as a dictionary
     # blocked - False, unexplored - None, explored - True
-    for x in range(5):
-        for y in range(6):
+    for x in range(grid_dimension[0]):
+        for y in range(grid_dimension[1]):
             keys_grid.append((x, y))
     grid = dict.fromkeys(keys_grid, None)
 
@@ -96,8 +96,8 @@ def test_one_obstacle_6x6():
 
     # create the grid as a dictionary
     # blocked - False, unexplored - None, explored - True
-    for x in range(7):
-        for y in range(7):
+    for x in range(grid_dimension[0]):
+        for y in range(grid_dimension[1]):
             keys_grid.append((x, y))
     grid = dict.fromkeys(keys_grid, None)
 
@@ -137,8 +137,8 @@ def test_multiple_obstacle_6x6():
 
     # create the grid as a dictionary
     # blocked - False, unexplored - None, explored - True
-    for x in range(7):
-        for y in range(7):
+    for x in range(grid_dimension[0]):
+        for y in range(grid_dimension[1]):
             keys_grid.append((x, y))
     grid = dict.fromkeys(keys_grid, None)
 
@@ -178,8 +178,8 @@ def test_dead_end_6x6():
 
     # create the grid as a dictionary
     # blocked - False, unexplored - None, explored - True
-    for x in range(7):
-        for y in range(7):
+    for x in range(grid_dimension[0]):
+        for y in range(grid_dimension[1]):
             keys_grid.append((x, y))
 
     grid = dict.fromkeys(keys_grid, None)
