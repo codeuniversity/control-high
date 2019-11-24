@@ -51,7 +51,7 @@ def update_pos(pos, action):
     return new_pos
 
 
-def plan(grid, grid_dimension:(int, int), start_pos = (0,0), layer = 0, orientation = FORWARD):
+def plan(grid, grid_dimension, start_pos = (0,0), layer = 0, orientation = FORWARD):
     pos = start_pos
     plan =  []
 
