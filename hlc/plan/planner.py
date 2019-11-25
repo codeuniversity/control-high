@@ -14,7 +14,7 @@ TURN_RIGHT = 'turn right 90 degrees'
 
 
 class Position():
-    def __init__(self, coordinates):
+    def __init__(self, coordinates=(0, 0)):
         self.x, self.y = coordinates
 
     def current(self):
