@@ -17,8 +17,19 @@ class Position():
     def __init__(self, coordinates=(0, 0)):
         self.x, self.y = coordinates
 
+    def __eq__(self, value):
+        if isinstance(value, Position):
+            return self.current() == value.current()
+        elif isinstance(value, tuple):
+            return self.current() == value
+        else:
+            raise TypeError('Parameter has to be of class Position or of type tuple.')
+
     def current(self):
         return (self.x, self.y)
+
+    def copy(self):
+        return Position(self.current())
 
     def update(self, action, operationIsAdd=True):
         new_x, new_y = action
@@ -55,7 +66,9 @@ def layer_pos(grid_dimension, layer):
 
 
 def plan(grid_dimension, start_pos = (0, 0), layer = 0, orientation = FORWARD):
-    pos = Position(start_pos)
+    start_pos = Position(start_pos)
+    pos = start_pos.copy()
+    start_pos.update((1, 0))
     plan =  []
 
     max_layer = max(grid_dimension) // 2
@@ -65,12 +78,13 @@ def plan(grid_dimension, start_pos = (0, 0), layer = 0, orientation = FORWARD):
         plan.append(MOVE_FORWARD)
         pos.update(orientation)
 
-        if pos.current() == Position(start_pos).update((1, 0)):
+
+        if pos == start_pos:
             plan.append(TURN_RIGHT)
             plan.append(MOVE_FORWARD)
             pos.update(FORWARD)
             layer += 1
-            start_pos = pos.current()
+            start_pos = pos.copy().update((1, 0))
             orientation = FORWARD
         elif pos.x == layer and pos.y == grid_dimension[1]-layer:
             plan.append(TURN_RIGHT)
