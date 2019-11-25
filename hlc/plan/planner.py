@@ -22,12 +22,13 @@ class Position():
 
     def update(self, action, operationIsAdd=True):
         new_x, new_y = action
+
         if operationIsAdd:
-            self.x += action[0]
-            self.y += action[1]
+            self.x += new_x
+            self.y += new_y
         else:
-            self.x -= action[0]
-            self.y -= action[1]
+            self.x -= new_x
+            self.y -= new_y
 
         return (self.x, self.y)
 
