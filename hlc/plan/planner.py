@@ -13,16 +13,35 @@ MOVE_FORWARD = 'move forward'
 TURN_RIGHT = 'turn right 90 degrees'
 
 
-def add_pos_tuple(t1, t2):
-    new_x = t1[0] + t2[0]
-    new_y = t1[1] + t2[1]
-    return (new_x, new_y)
+class Position():
+    def __init__(self, coordinates=(0, 0)):
+        self.x, self.y = coordinates
 
+    def __eq__(self, value):
+        if isinstance(value, Position):
+            return self.current() == value.current()
+        elif isinstance(value, tuple):
+            return self.current() == value
+        else:
+            raise TypeError('Parameter has to be of class Position or of type tuple.')
 
-def sub_pos_tuple(t1, t2):
-    new_x = t1[0] - t2[0]
-    new_y = t1[1] - t2[1]
-    return (new_x, new_y)
+    def current(self):
+        return (self.x, self.y)
+
+    def copy(self):
+        return Position(self.current())
+
+    def update(self, action, operationIsAdd=True):
+        new_x, new_y = action
+
+        if operationIsAdd:
+            self.x += new_x
+            self.y += new_y
+        else:
+            self.x -= new_x
+            self.y -= new_y
+
+        return (self.x, self.y)
 
 
 def layer_pos(grid_dimension, layer):
@@ -46,13 +65,10 @@ def layer_pos(grid_dimension, layer):
     return left_layer, right_layer, top_layer, bottom_layer
 
 
-def update_pos(pos, action):
-    new_pos = add_pos_tuple(pos, action)
-    return new_pos
-
-
-def plan(grid, grid_dimension, start_pos = (0,0), layer = 0, orientation = FORWARD):
-    pos = start_pos
+def plan(grid_dimension, start_pos = (0, 0), layer = 0, orientation = FORWARD):
+    start_pos = Position(start_pos)
+    pos = start_pos.copy()
+    start_pos.update((1, 0))
     plan =  []
 
     max_layer = max(grid_dimension) // 2
@@ -60,34 +76,35 @@ def plan(grid, grid_dimension, start_pos = (0,0), layer = 0, orientation = FORWA
     while layer < max_layer:
 
         plan.append(MOVE_FORWARD)
-        pos = update_pos(pos, orientation)
+        pos.update(orientation)
 
-        if pos == add_pos_tuple(start_pos, (1, 0)):
+
+        if pos == start_pos:
             plan.append(TURN_RIGHT)
             plan.append(MOVE_FORWARD)
-            pos = add_pos_tuple(pos, FORWARD)
+            pos.update(FORWARD)
             layer += 1
-            start_pos = pos
+            start_pos = pos.copy().update((1, 0))
             orientation = FORWARD
-        elif pos[1] == layer and pos[0] == grid_dimension[0]-layer:
-            plan.append(TURN_RIGHT)
-            orientation = LEFT
-        elif pos[0] == grid_dimension[0]-layer and pos[1] == grid_dimension[1]-layer:
-            plan.append(TURN_RIGHT)
-            orientation = BACKWARD
-        elif pos[1] == grid_dimension[1]-layer and pos[0] == layer:
+        elif pos.x == layer and pos.y == grid_dimension[1]-layer:
             plan.append(TURN_RIGHT)
             orientation = RIGHT
+        elif pos.x == grid_dimension[0]-layer and pos.y == grid_dimension[1]-layer:
+            plan.append(TURN_RIGHT)
+            orientation = BACKWARD
+        elif pos.x == grid_dimension[0]-layer and pos.y == layer:
+            plan.append(TURN_RIGHT)
+            orientation = LEFT
 
     if grid_dimension[0] != grid_dimension[1] and layer == max_layer:
         if grid_dimension[0] % 2 == 1:
             plan.append(TURN_RIGHT)
-            while pos[0] < grid_dimension[0]-layer:
+            while pos.x < grid_dimension[0]-layer:
                 plan.append(MOVE_FORWARD)
-                pos = add_pos_tuple(pos, RIGHT)
+                pos.update(RIGHT)
         else:
-            while pos[1] < grid_dimension[1]-layer:
+            while pos.y < grid_dimension[1]-layer:
                 plan.append(MOVE_FORWARD)
-                pos = add_pos_tuple(pos, FORWARD)
+                pos.update(FORWARD)
 
     return plan
