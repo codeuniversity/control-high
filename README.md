@@ -1,3 +1,7 @@
+---
+
+---
+
 # High Level Controller
 
 ## Overview 
@@ -9,9 +13,9 @@ The Planning Alogorithm creates the high level actions (hla) to ensure a sucessf
 
 ## Project Structure
 
-![](/Users/selmaillig/Downloads/High Level Controller.png)
+![hlc_sequence_diagram](./images/hlc_sequence_diagram.png)
 
-## Requirements
+##Requirements
 
 Python version, packages etc --> requirement.txt
 MHIST https://github.com/alexmorten/mhist/tree/2b4bed690fb6b38bf6e0c13f7b4f67c05c5d9c52 - wie startet man MHIST 
