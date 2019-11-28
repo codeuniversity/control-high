@@ -13,14 +13,14 @@ This is part of the SOZO-Robotics Exploration-Bot architecture. See the other co
 The High-Level-Controller, further referred to as HLC, is responsible for navigating the robot.
 In short, it receives orders from the Swarm, creates a plan to walk through the whole map and forwards movement actions to the Gait-Controller.
 
-[architectural-overview.png](./architecural-overview.png)
-
 ## Description
 
 The HLC consists of three main parts and one manager. There is the part responsible for creating the plan, the part responsible for receiving data and the part responsible for preparing and sending data. The manager is responsible for starting everything in the first place, keeping it alive and managing the cummunication between the other parts.
 
 -- HERE COMES A DISCLAIMER --
 At the moment many parts still have not been build or even fully planned yet. So some components or even bigger parts of the whole architecture might change drastically.
+
+![architectural-overview.png](./architectural-overview.png)
 
 ### Monitor
 
@@ -30,9 +30,9 @@ The Monitor will start all the different processes and run continuisly to ensure
 
 The Planner will take the size of the map and the location of the obstacles to create a plan/path through the given map. It will replan once the current plan is not possible anymore.
 
-### Sender
+### Supplier
 
-The Sender will take the plan from the Planner and send it one action at a time to the Gait-Controller. When the Planner replans, the Sender will get the updated map and send the new actions.
+The Supplier will take the plan from the Planner and send it one action at a time to the Gait-Controller. When the Planner replans, the Supplier will get the updated map and send the new actions.
 
 ### Receiver
 
