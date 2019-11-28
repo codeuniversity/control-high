@@ -11,7 +11,7 @@ The Planning Alogorithm creates the high level actions (hla) to ensure a sucessf
 
 ![hlc_sequence_diagram](./images/hlc_sequence_diagram.png)
 
-The "Monitor" is the main Process, that is starting the subprocesses "Queues", "Receiver", "Supplier" and "Plan". The receiver subscribes to MHIST, a simple on disc measurement data base that stores and redistributes measurements consisting of a name, a value and optionally a timestamp through grpc.
+The "Monitor" is the main Process, that is starting the subprocesses "Queues", "Receiver", "Supplier" and "Plan". The receiver subscribes to [MHIST](https://github.com/alexmorten/mhist/tree/2b4bed690fb6b38bf6e0c13f7b4f67c05c5d9c52), a simple on disc measurement data base that stores and redistributes measurements consisting of a name, a value and optionally a timestamp through grpc.
 The output, the hla, are pushed to MHIST and then pulled from the gait controller.
 
 ## To Do
