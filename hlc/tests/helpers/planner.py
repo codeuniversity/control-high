@@ -1,3 +1,5 @@
+from hlc.config.constants import *
+
 def right_turn(orientation):
     if orientation == FORWARD:
         orientation = RIGHT
