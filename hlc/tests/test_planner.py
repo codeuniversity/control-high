@@ -2,36 +2,22 @@ from hlc.plan.planner import plan
 from hlc.config.constants import *
 from hlc.helpers.planner import Position
 from hlc.tests.helpers.planner import right_turn
+from hlc.tests.helpers.planner import generate_grid
+from hlc.tests.helpers.planner import navigate_grid
 import numpy as np
 
 
 def test_empty_map_6x6():
-    keys_grid = []
-    start_pos = (0, 0)
-    pos = Position(start_pos)
     grid_dimension = (6, 6)
 
-    # create the grid as a dictionary
-    # blocked - False, unexplored - None, explored - True
-    for x in range(grid_dimension[0] + 1):
-        for y in range(grid_dimension[1] + 1):
-            keys_grid.append((x, y))
-    grid = dict.fromkeys(keys_grid, None)
+    start_pos = (0, 0)
+    pos = Position(start_pos)
 
-    # set start position to explored
-    grid[start_pos] = True
-
+    initial_grid = generate_grid(grid_dimension)
     plan_output = plan(grid_dimension, start_pos)
 
-    # execute the actions and set explored pos to True
-    orientation = FORWARD
-    for action in plan_output:
-        if action == TURN_RIGHT:
-            orientation = right_turn(orientation)
-            grid[pos.current()] = True
-        elif action == MOVE_FORWARD:
-            pos.update(orientation)
-            grid[pos.current()] = True
+    initial_grid[start_pos] = True
+    grid = navigate_grid(plan_output, initial_grid, pos)
 
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
@@ -39,33 +25,16 @@ def test_empty_map_6x6():
 
 
 def test_empty_map_4x5():
-    keys_grid = []
-    start_pos = (0, 0)
-    pos = Position(start_pos)
     grid_dimension = (4, 5)
 
-    # create the grid as a dictionary
-    # blocked - False, unexplored - None, explored - True
-    for x in range(grid_dimension[0] + 1):
-        for y in range(grid_dimension[1] + 1):
-            keys_grid.append((x, y))
-    grid = dict.fromkeys(keys_grid, None)
+    start_pos = (0, 0)
+    pos = Position(start_pos)
 
-    # set start position to explored
-    grid[start_pos] = True
-
+    initial_grid = generate_grid(grid_dimension)
     plan_output = plan(grid_dimension, start_pos)
 
-    # execute the actions and set explored pos to True
-    orientation = FORWARD
-    for action in plan_output:
-        if action == TURN_RIGHT:
-            orientation = right_turn(orientation)
-            grid[pos.current()] = True
-        elif action == MOVE_FORWARD:
-            pos.update(orientation)
-            grid[pos.current()] = True
-
+    initial_grid[start_pos] = True
+    grid = navigate_grid(plan_output, initial_grid, pos)
 
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
