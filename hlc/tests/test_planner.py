@@ -1,30 +1,14 @@
-from hlc.plan import planner
-from enum import Enum
+from hlc.plan.planner import plan
+from hlc.config.constants import *
+from hlc.helpers.planner import Position
+from hlc.tests.helpers.planner import right_turn
 import numpy as np
-
-class Orientation(Enum):
-    FORWARD = (0,1)
-    RIGHT = (1, 0)
-    BACKWARD = (0, -1)
-    LEFT = (-1, 0)
-
-def right_turn(orientation):
-    if orientation.name == "FORWARD":
-        orientation = Orientation.RIGHT
-    elif orientation.name == "RIGHT":
-        orientation = Orientation.BACKWARD
-    elif orientation.name == "BACKWARD":
-        orientation  = Orientation.LEFT
-    elif orientation.name == "LEFT":
-        orientation = Orientation.FORWARD
-
-    return orientation
 
 
 def test_empty_map_6x6():
     keys_grid = []
     start_pos = (0, 0)
-    pos = planner.Position(start_pos)
+    pos = Position(start_pos)
     grid_dimension = (6, 6)
 
     # create the grid as a dictionary
@@ -37,16 +21,16 @@ def test_empty_map_6x6():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid_dimension, start_pos)
+    plan_output = plan(grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
-    orientation = Orientation.FORWARD
+    orientation = FORWARD
     for action in plan_output:
-        if action == planner.TURN_RIGHT:
+        if action == TURN_RIGHT:
             orientation = right_turn(orientation)
             grid[pos.current()] = True
-        elif action == planner.MOVE_FORWARD:
-            pos.update(orientation.value)
+        elif action == MOVE_FORWARD:
+            pos.update(orientation)
             grid[pos.current()] = True
 
     # for a map without obstacles the robot needs to visit all positions
@@ -57,7 +41,7 @@ def test_empty_map_6x6():
 def test_empty_map_4x5():
     keys_grid = []
     start_pos = (0, 0)
-    pos = planner.Position(start_pos)
+    pos = Position(start_pos)
     grid_dimension = (4, 5)
 
     # create the grid as a dictionary
@@ -70,16 +54,16 @@ def test_empty_map_4x5():
     # set start position to explored
     grid[start_pos] = True
 
-    plan_output = planner.plan(grid_dimension, start_pos)
+    plan_output = plan(grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
-    orientation = Orientation.FORWARD
+    orientation = FORWARD
     for action in plan_output:
-        if action == planner.TURN_RIGHT:
+        if action == TURN_RIGHT:
             orientation = right_turn(orientation)
             grid[pos.current()] = True
-        elif action == planner.MOVE_FORWARD:
-            pos.update(orientation.value)
+        elif action == MOVE_FORWARD:
+            pos.update(orientation)
             grid[pos.current()] = True
 
 
@@ -114,10 +98,10 @@ def test_one_obstacle_6x6():
 
     # execute the actions and set explored pos to True
     for action in plan_output:
-        if action == planner.TURN_RIGHT:
+        if action == constants.TURN_RIGHT:
             orientation = right_turn(orientation)
             grid[pos] = True
-        elif action == planner.MOVE_FORWARD:
+        elif action == constants.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
             grid[pos] = True
 
@@ -155,10 +139,10 @@ def test_multiple_obstacle_6x6():
 
     # execute the actions and set explored pos to True
     for action in plan_output:
-        if action == planner.TURN_RIGHT:
+        if action == constants.TURN_RIGHT:
             orientation = right_turn(orientation)
             grid[pos] = True
-        elif action == planner.MOVE_FORWARD:
+        elif action == constants.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
             grid[pos] = True
 
@@ -197,10 +181,10 @@ def test_dead_end_6x6():
 
     # execute the actions and set explored pos to True
     for action in plan_output:
-        if action == planner.TURN_RIGHT:
+        if action == constants.TURN_RIGHT:
             orientation = right_turn(orientation)
             grid[pos] = True
-        elif action == planner.MOVE_FORWARD:
+        elif action == constants.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
             grid[pos] = True
 
