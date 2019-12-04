@@ -1,4 +1,3 @@
-from enum import Enum
 from hlc.plan.planner import plan
 from hlc.plan.grid_generator import generate_grid
 

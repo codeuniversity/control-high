@@ -4,7 +4,6 @@ from hlc.helpers.planner import Position
 from hlc.tests.helpers.planner import right_turn
 from hlc.tests.helpers.planner import generate_grid
 from hlc.tests.helpers.planner import navigate_grid
-import numpy as np
 
 
 def test_empty_map_6x6():

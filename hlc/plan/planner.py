@@ -1,4 +1,3 @@
-import math
 from hlc.config.constants import *
 from hlc.helpers.planner import Position
 
