@@ -4,20 +4,15 @@ from hlc.mhist_api.rpc_pb2 import Filter, MeasurementMessage, Measurement, Raw
 from multiprocessing import Process
 from multiprocessing.queues import Queue
 
-MHIST_address = 'localhost'
-MHIST_port = '6666'
-
-channel = grpc.insecure_channel(MHIST_address + ':' + MHIST_port)
-stub = rpc_grpc.MhistStub(channel)
-
 
 class Receiver(Process):
 
     def __init__(
             self, map_queue: Queue, pos_queue: Queue, gait_queue: Queue,
             map_channel: str, pos_channel: str, gait_channel: str,
+            mhist_address='localhost', mhist_port='6666',
             daemon=False, name='receiver-process'):
-        super().__init__()
+        super().__init__(daemon=daemon, name=name)
         self.map_queue = map_queue
         self.pos_queue = pos_queue
         self.gait_queue = gait_queue
@@ -25,27 +20,38 @@ class Receiver(Process):
         self.pos_channel = pos_channel
         self.gait_channel = gait_channel
 
+        channel = grpc.insecure_channel(mhist_address + ':' + mhist_port)
+        self.mhist_stub = rpc_grpc.MhistStub(channel)
+
+    def extract_measurement(self, measurementMessage):
+        if measurementMessage.measurement.HasField("numerical"):
+            measurement = measurementMessage.measurement.numerical
+            value = measurement.value
+        elif measurementMessage.measurement.HasField("categorical"):
+            measurement = measurementMessage.measurement.categorical
+            value = measurement.value
+        elif measurementMessage.measurement.HasField("raw"):
+            measurement = measurementMessage.measurement.raw
+            value = measurement.value.decode()
+        else:
+            raise TypeError(
+                "The received MeasurementMessage has an unkown type")
+        timestamp = measurement.ts
+
+        return {'ts': timestamp, 'value': value}
+
     def run(self):
         channels = [self.map_channel, self.pos_channel, self.gait_channel]
-        for message in stub.Subscribe(
+        for message in self.mhist_stub.Subscribe(
                 Filter(names=channels)):
-
-            if message.measurement.HasField("numerical"):
-                measurement = message.measurement.numerical
-            elif message.measurement.HasField("categorical"):
-                measurement = message.measurement.categorical
-            elif message.measurement.HasField("raw"):
-                measurement = message.measurement.raw
+            measurement = self.extract_measurement(message)
 
             if message.name == self.map_channel:
-                self.map_queue.put(
-                    {'ts': measurement.ts, 'value': measurement.value})
+                self.map_queue.put(measurement)
             elif message.name == self.pos_channel:
-                self.pos_queue.put(
-                    {'ts': measurement.ts, 'value': measurement.value})
+                self.pos_queue.put(measurement)
             elif message.name == self.gait_channel:
-                self.gait_queue.put(
-                    {'ts': measurement.ts, 'value': measurement.value})
+                self.gait_queue.put(measurement)
             else:
                 raise ValueError(
-                    "given channel Name doesn't match message-channel!")
+                    "Given channel Name doesn't match message-channel!")
