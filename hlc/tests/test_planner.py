@@ -1,22 +1,20 @@
-from hlc.plan.planner import plan
-from hlc.config.constants import *
-from hlc.helpers.planner import Position
-from hlc.tests.helpers.planner import right_turn
-from hlc.tests.helpers.planner import generate_grid
-from hlc.tests.helpers.planner import navigate_grid
+from hlc.planner import planner
+from hlc.planner.planner import plan
+from hlc.planner.helper import Pose, HLAction
+from hlc.tests.helper import generate_grid, navigate_grid
 
 
 def test_empty_map_6x6():
     grid_dimension = (6, 6)
 
-    start_pos = (0, 0)
-    pos = Position(start_pos)
+    start_pose = Pose(0, 0, 0)
+    test_pose = start_pose.copy()
 
-    initial_grid = generate_grid(grid_dimension)
-    plan_output = plan(grid_dimension, start_pos)
+    grid = generate_grid(grid_dimension)
+    plan_output = plan(grid_dimension, start_pose)
 
-    initial_grid[start_pos] = True
-    grid = navigate_grid(plan_output, initial_grid, pos)
+    grid[start_pose.get_position()] = True
+    navigate_grid(plan_output, grid, test_pose)
 
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
@@ -26,14 +24,14 @@ def test_empty_map_6x6():
 def test_empty_map_4x5():
     grid_dimension = (4, 5)
 
-    start_pos = (0, 0)
-    pos = Position(start_pos)
+    start_pos = Pose(0, 0, 0)
+    pos = start_pos.copy()
 
-    initial_grid = generate_grid(grid_dimension)
+    grid = generate_grid(grid_dimension)
     plan_output = plan(grid_dimension, start_pos)
 
-    initial_grid[start_pos] = True
-    grid = navigate_grid(plan_output, initial_grid, pos)
+    grid[start_pos.get_position()] = True
+    navigate_grid(plan_output, grid, pos)
 
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
@@ -65,9 +63,11 @@ def test_one_obstacle_6x6():
     plan_output = planner.plan(grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
+    navigate_grid(plan_output, grid)
+
     for action in plan_output:
-        if action == constants.TURN_RIGHT:
-            orientation = right_turn(orientation)
+        if action == HLAction.TURN_RIGHT:
+            orientation = HLAction.right_turn(orientation)
             grid[pos] = True
         elif action == constants.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
