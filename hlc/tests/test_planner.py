@@ -1,53 +1,20 @@
-from hlc.plan import planner
-from enum import Enum
-import numpy as np
-
-class Orientation(Enum):
-    FORWARD = (0,1)
-    RIGHT = (1, 0)
-    BACKWARD = (0, -1)
-    LEFT = (-1, 0)
-
-def right_turn(orientation):
-    if orientation.name == "FORWARD":
-        orientation = Orientation.RIGHT
-    elif orientation.name == "RIGHT":
-        orientation = Orientation.BACKWARD
-    elif orientation.name == "BACKWARD":
-        orientation  = Orientation.LEFT
-    elif orientation.name == "LEFT":
-        orientation = Orientation.FORWARD
-
-    return orientation
+from hlc.planner import planner
+from hlc.planner.planner import plan
+from hlc.planner.helper import Pose, HLAction
+from hlc.tests.helper import generate_grid, navigate_grid
 
 
 def test_empty_map_6x6():
-    keys_grid = []
-    start_pos = (0, 0)
-    pos = planner.Position(start_pos)
     grid_dimension = (6, 6)
 
-    # create the grid as a dictionary
-    # blocked - False, unexplored - None, explored - True
-    for x in range(grid_dimension[0] + 1):
-        for y in range(grid_dimension[1] + 1):
-            keys_grid.append((x, y))
-    grid = dict.fromkeys(keys_grid, None)
+    start_pose = Pose(0, 0, 0)
+    test_pose = start_pose.copy()
 
-    # set start position to explored
-    grid[start_pos] = True
+    grid = generate_grid(grid_dimension)
+    plan_output = plan(grid_dimension, start_pose)
 
-    plan_output = planner.plan(grid_dimension, start_pos)
-
-    # execute the actions and set explored pos to True
-    orientation = Orientation.FORWARD
-    for action in plan_output:
-        if action == planner.TURN_RIGHT:
-            orientation = right_turn(orientation)
-            grid[pos.current()] = True
-        elif action == planner.MOVE_FORWARD:
-            pos.update(orientation.value)
-            grid[pos.current()] = True
+    grid[start_pose.get_position()] = True
+    navigate_grid(plan_output, grid, test_pose)
 
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
@@ -55,33 +22,16 @@ def test_empty_map_6x6():
 
 
 def test_empty_map_4x5():
-    keys_grid = []
-    start_pos = (0, 0)
-    pos = planner.Position(start_pos)
     grid_dimension = (4, 5)
 
-    # create the grid as a dictionary
-    # blocked - False, unexplored - None, explored - True
-    for x in range(grid_dimension[0] + 1):
-        for y in range(grid_dimension[1] + 1):
-            keys_grid.append((x, y))
-    grid = dict.fromkeys(keys_grid, None)
+    start_pos = Pose(0, 0, 0)
+    pos = start_pos.copy()
 
-    # set start position to explored
-    grid[start_pos] = True
+    grid = generate_grid(grid_dimension)
+    plan_output = plan(grid_dimension, start_pos)
 
-    plan_output = planner.plan(grid_dimension, start_pos)
-
-    # execute the actions and set explored pos to True
-    orientation = Orientation.FORWARD
-    for action in plan_output:
-        if action == planner.TURN_RIGHT:
-            orientation = right_turn(orientation)
-            grid[pos.current()] = True
-        elif action == planner.MOVE_FORWARD:
-            pos.update(orientation.value)
-            grid[pos.current()] = True
-
+    grid[start_pos.get_position()] = True
+    navigate_grid(plan_output, grid, pos)
 
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
@@ -113,11 +63,13 @@ def test_one_obstacle_6x6():
     plan_output = planner.plan(grid_dimension, start_pos)
 
     # execute the actions and set explored pos to True
+    navigate_grid(plan_output, grid)
+
     for action in plan_output:
-        if action == planner.TURN_RIGHT:
-            orientation = right_turn(orientation)
+        if action == HLAction.TURN_RIGHT:
+            orientation = HLAction.right_turn(orientation)
             grid[pos] = True
-        elif action == planner.MOVE_FORWARD:
+        elif action == constants.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
             grid[pos] = True
 
@@ -155,10 +107,10 @@ def test_multiple_obstacle_6x6():
 
     # execute the actions and set explored pos to True
     for action in plan_output:
-        if action == planner.TURN_RIGHT:
+        if action == constants.TURN_RIGHT:
             orientation = right_turn(orientation)
             grid[pos] = True
-        elif action == planner.MOVE_FORWARD:
+        elif action == constants.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
             grid[pos] = True
 
@@ -197,10 +149,10 @@ def test_dead_end_6x6():
 
     # execute the actions and set explored pos to True
     for action in plan_output:
-        if action == planner.TURN_RIGHT:
+        if action == constants.TURN_RIGHT:
             orientation = right_turn(orientation)
             grid[pos] = True
-        elif action == planner.MOVE_FORWARD:
+        elif action == constants.MOVE_FORWARD:
             pos = planner.add_pos_tuple(pos, orientation.value)
             grid[pos] = True
 
