@@ -9,35 +9,35 @@ def apply_actions(actions, position, plan):
 
 
 def plan(grid_dimension, start_pose=Pose(0, 0, 0), layer=0,):
-    pos = start_pose.copy()
+    robot_pose = start_pose.copy()
     plan = []
+    final_layer_position = start_pose.add_tuple((1, 0))
 
     max_layer = max(grid_dimension) // 2
 
     while layer < max_layer:
 
-        apply_actions([HLAction.MOVE_FORWARD], pos, plan)
+        apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
 
-        if pos.get_position() == start_pose.add_tuple((1, 0)):
+        if robot_pose.get_position() == final_layer_position:
             apply_actions(
-                [HLAction.TURN_RIGHT, HLAction.MOVE_FORWARD], pos, plan)
-            # start_pos = pos.copy().update((1, 0))
-            start_pose = pos.copy()
+                [HLAction.TURN_RIGHT, HLAction.MOVE_FORWARD], robot_pose, plan)
+            final_layer_position = robot_pose.copy().add_tuple((1, 0))
             layer += 1
-        elif pos.x == layer and pos.y == grid_dimension[1] - layer:
-            apply_actions([HLAction.TURN_RIGHT], pos, plan)
-        elif pos.x == grid_dimension[0] - layer and pos.y == grid_dimension[1] - layer:
-            apply_actions([HLAction.TURN_RIGHT], pos, plan)
-        elif pos.x == grid_dimension[0] - layer and pos.y == layer:
-            apply_actions([HLAction.TURN_RIGHT], pos, plan)
+        elif robot_pose.x == layer and robot_pose.y == grid_dimension[1] - layer:
+            apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
+        elif robot_pose.x == grid_dimension[0] - layer and robot_pose.y == grid_dimension[1] - layer:
+            apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
+        elif robot_pose.x == grid_dimension[0] - layer and robot_pose.y == layer:
+            apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
 
     if grid_dimension[0] != grid_dimension[1] and layer == max_layer:
         if grid_dimension[0] % 2 == 1:
-            apply_actions([HLAction.TURN_RIGHT], pos, plan)
-            while pos.x < grid_dimension[0] - layer:
-                apply_actions([HLAction.MOVE_FORWARD], pos, plan)
+            apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
+            while robot_pose.x < grid_dimension[0] - layer:
+                apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
         else:
-            while pos.y < grid_dimension[1] - layer:
-                apply_actions([HLAction.MOVE_FORWARD], pos, plan)
+            while robot_pose.y < grid_dimension[1] - layer:
+                apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
 
     return plan
