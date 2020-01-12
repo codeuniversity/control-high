@@ -50,12 +50,12 @@ def update_position(pose, new_actions):
         pose.update(action)
 
 
-def plan(grid_dimension, start_pose=Pose(0, 0, 0), layer_index=0,):
+def plan(grid_width, grid_height, start_pose=Pose(0, 0, 0), layer_index=0,):
     robot_pose = start_pose.copy()
     plan = []
     final_layer_position = start_pose.add_tuple((1, 0))
 
-    layerMap = Layered2DMap(grid_dimension[0], grid_dimension[1], layer_index)
+    layerMap = Layered2DMap(grid_width, grid_height, layer_index)
 
     max_layer_index = max(grid_dimension) // 2
 
@@ -70,11 +70,11 @@ def plan(grid_dimension, start_pose=Pose(0, 0, 0), layer_index=0,):
             final_layer_position = get_new_final_layer_position(robot_pose)
             layer_index += 1
             layerMap.switchLayer(layer_index)
-        elif (robot_pose.x, robot_pose.y) == layerMap.left_upper_layer_corner:
+        elif robot_pose.get_position() == layerMap.left_upper_layer_corner:
             apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
-        elif (robot_pose.x, robot_pose.y) == layerMap.right_upper_layer_corner:
+        elif robot_pose.get_position() == layerMap.right_upper_layer_corner:
             apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
-        elif (robot_pose.x, robot_pose.y) == layerMap.right_bottom_layer_corner:
+        elif robot_pose.get_position() == layerMap.right_bottom_layer_corner:
             apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
 
     if grid_dimension[0] != grid_dimension[1] and layer_index == max_layer_index:

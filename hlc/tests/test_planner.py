@@ -5,13 +5,12 @@ from hlc.tests.helper import generate_grid, navigate_grid
 
 
 def test_empty_map_6x6():
-    grid_dimension = (6, 6)
 
     start_pose = Pose(0, 0, 0)
     test_pose = start_pose.copy()
 
-    grid = generate_grid(grid_dimension)
-    plan_output = plan(grid_dimension, start_pose)
+    grid = generate_grid(grid_width, grid_height)
+    plan_output = plan(grid_width, grid_height, start_pose)
 
     grid[start_pose.get_position()] = True
     navigate_grid(plan_output, grid, test_pose)
@@ -22,13 +21,13 @@ def test_empty_map_6x6():
 
 
 def test_empty_map_4x5():
-    grid_dimension = (4, 5)
+    grid_width, grid_height = (9, 7)
 
     start_pos = Pose(0, 0, 0)
     pos = start_pos.copy()
 
-    grid = generate_grid(grid_dimension)
-    plan_output = plan(grid_dimension, start_pos)
+    grid = generate_grid(grid_width, grid_height)
+    plan_output = plan(grid_width, grid_height, start_pos)
 
     grid[start_pos.get_position()] = True
     navigate_grid(plan_output, grid, pos)
@@ -42,12 +41,12 @@ def test_one_obstacle_6x6():
     keys_grid = []
     start_pos = (0, 0)
     pos = (0, 0)
-    grid_dimension = (6, 6)
+    grid_width, grid_height = (6, 6)
     obstacles = [(1, 2)]
 
     # create the grid as a dictionary
     # blocked - False, unexplored - None, explored - True
-    for x in range(grid_dimension[0] + 1):
+    for x in range(grid_dimension[1] + 1):
         for y in range(grid_dimension[1] + 1):
             keys_grid.append((x, y))
     grid = dict.fromkeys(keys_grid, None)

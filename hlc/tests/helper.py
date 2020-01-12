@@ -15,7 +15,7 @@ def right_turn(orientation):
     return orientation
 
 
-def generate_grid(grid_dimension, obstacles=[]):
+def generate_grid(grid_width, grid_height, obstacles=[]):
     keys_grid = []
 
     for x in range(grid_width):
