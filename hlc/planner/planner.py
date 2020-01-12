@@ -58,34 +58,28 @@ def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_inde
     plan = []
     final_layer_position = start_pose.add_tuple((1, 0))
 
-    layerMap = Layered2DMap(grid_width, grid_height, layer_index)
+    layer_map = Layered2DMap(grid_width, grid_height, layer_index)
 
     max_layer_index = min(grid_height, grid_width) // 2
 
-    while layerMap.layer_index < max_layer_index:
+    while layer_map.layer_index < max_layer_index:
 
-        apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
+        actions = progress_through_layer(
+            layer_map, robot_pose, final_layer_position)
+        plan.extend(actions)
 
-        if robot_pose.get_position() == final_layer_position:
-            switch_layer_actions = [HLAction.TURN_RIGHT, HLAction.MOVE_FORWARD]
-            plan.extend(switch_layer_actions)
-            update_position(robot_pose, switch_layer_actions)
-            final_layer_position = get_new_final_layer_position(robot_pose)
-            layerMap.switchLayer(layerMap.layer_index + 1)
-        elif robot_pose.get_position() == layerMap.left_upper_layer_corner:
-            apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
-        elif robot_pose.get_position() == layerMap.right_upper_layer_corner:
-            apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
-        elif robot_pose.get_position() == layerMap.right_bottom_layer_corner:
-            apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
+        switch_layer_actions = [HLAction.TURN_RIGHT, HLAction.MOVE_FORWARD]
+        apply_actions(switch_layer_actions, robot_pose, plan)
+        final_layer_position = get_new_final_layer_position(robot_pose)
+        layer_map.switchLayer(layer_map.layer_index + 1)
 
-    if grid_width != grid_height and layerMap.layer_index == max_layer_index:
+    if grid_width != grid_height and layer_map.layer_index == max_layer_index:
         if grid_width % 2 == 1:
             apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
-            while robot_pose.x < grid_width - layerMap.layer_index:
+            while robot_pose.x < grid_width - layer_map.layer_index:
                 apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
         else:
-            while robot_pose.y < grid_height - layerMap.layer_index:
+            while robot_pose.y < grid_height - layer_map.layer_index:
                 apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
 
     return plan
@@ -93,3 +87,18 @@ def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_inde
 
 def get_new_final_layer_position(robot_pose: Pose) -> Tuple[int, int]:
     return robot_pose.copy().add_tuple((1, 0))
+
+
+def progress_through_layer(layer_map: Layered2DMap, robot_pose: Pose, final_layer_position: Tuple[int, int]) -> List[HLAction]:
+    progress = []
+    while robot_pose.get_position() != final_layer_position:
+        apply_actions([HLAction.MOVE_FORWARD], robot_pose, progress)
+
+        if layer_map.left_upper_layer_corner == robot_pose.get_position():
+            apply_actions([HLAction.TURN_RIGHT], robot_pose, progress)
+        elif layer_map.right_upper_layer_corner == robot_pose.get_position():
+            apply_actions([HLAction.TURN_RIGHT], robot_pose, progress)
+        elif layer_map.right_bottom_layer_corner == robot_pose.get_position():
+            apply_actions([HLAction.TURN_RIGHT], robot_pose, progress)
+
+    return progress
