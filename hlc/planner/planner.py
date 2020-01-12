@@ -1,31 +1,34 @@
 # from hlc.config.constants import *
 from hlc.planner.helper import Position, Pose, HLAction
+from typing import Tuple, List
+
+Corner = Tuple[int, int]
 
 
 class Map2D():
-    def __init__(self, width, height):
+    def __init__(self, width: int, height: int):
         self.width = width
         self.height = height
 
 
 class Layered2DMap(Map2D):
 
-    def __init__(self, width, height, layer_index):
+    def __init__(self, width: int, height: int, layer_index: int):
         self.width = width
         self.height = height
         self.layer_index = layer_index
         self._update_all_layer_corners()
 
-    def _get_left_bottom_layer_corner(self):
+    def _get_left_bottom_layer_corner(self) -> Corner:
         return (self.layer_index, self.layer_index)
 
-    def _get_left_upper_layer_corner(self):
+    def _get_left_upper_layer_corner(self) -> Corner:
         return (self.layer_index, self.height - self.layer_index - 1)
 
-    def _get_right_upper_layer_corner(self):
+    def _get_right_upper_layer_corner(self) -> Corner:
         return (self.width - self.layer_index - 1, self.height - self.layer_index - 1)
 
-    def _get_right_bottom_layer_corner(self):
+    def _get_right_bottom_layer_corner(self) -> Corner:
         return (self.width - self.layer_index - 1, self.layer_index)
 
     def _update_all_layer_corners(self):
@@ -34,23 +37,23 @@ class Layered2DMap(Map2D):
         self.right_upper_layer_corner = self._get_right_upper_layer_corner()
         self.right_bottom_layer_corner = self._get_right_bottom_layer_corner()
 
-    def switchLayer(self, layer_index):
+    def switchLayer(self, layer_index: int):
         self.layer_index = layer_index
         self._update_all_layer_corners()
 
 
-def apply_actions(actions, position, plan):
+def apply_actions(actions: List[HLAction], robot_pose: Pose, plan: List[HLAction]):
     for a in actions:
         plan.append(a)
-        position.update(a)
+        robot_pose.update(a)
 
 
-def update_position(pose, new_actions):
+def update_position(pose: Pose, new_actions: List[HLAction]):
     for action in new_actions:
         pose.update(action)
 
 
-def plan(grid_width, grid_height, start_pose=Pose(0, 0, 0), layer_index=0,):
+def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_index=0) -> List[HLAction]:
     robot_pose = start_pose.copy()
     plan = []
     final_layer_position = start_pose.add_tuple((1, 0))
@@ -88,5 +91,5 @@ def plan(grid_width, grid_height, start_pose=Pose(0, 0, 0), layer_index=0,):
     return plan
 
 
-def get_new_final_layer_position(robot_pose):
+def get_new_final_layer_position(robot_pose: Pose) -> Tuple[int, int]:
     return robot_pose.copy().add_tuple((1, 0))
