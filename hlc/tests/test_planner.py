@@ -5,6 +5,7 @@ from hlc.tests.helper import generate_grid, navigate_grid
 
 
 def test_empty_map_6x6():
+    grid_width, grid_height = (6, 6)
 
     start_pose = Pose(0, 0, 0)
     test_pose = start_pose.copy()
@@ -20,7 +21,41 @@ def test_empty_map_6x6():
         assert value == True
 
 
-def test_empty_map_4x5():
+def test_empty_map_8x6():
+    grid_width, grid_height = (8, 6)
+
+    start_pose = Pose(0, 0, 0)
+    test_pose = start_pose.copy()
+
+    grid = generate_grid(grid_width, grid_height)
+    plan_output = plan(grid_width, grid_height, start_pose)
+
+    grid[start_pose.get_position()] = True
+    navigate_grid(plan_output, grid, test_pose)
+
+    # for a map without obstacles the robot needs to visit all positions
+    for value in grid.values():
+        assert value == True
+
+
+def test_empty_map_7x7():
+    grid_width, grid_height = (7, 7)
+
+    start_pose = Pose(0, 0, 0)
+    test_pose = start_pose.copy()
+
+    grid = generate_grid(grid_width, grid_height)
+    plan_output = plan(grid_width, grid_height, start_pose)
+
+    grid[start_pose.get_position()] = True
+    navigate_grid(plan_output, grid, test_pose)
+
+    # for a map without obstacles the robot needs to visit all positions
+    for value in grid.values():
+        assert value == True
+
+
+def test_empty_map_9x7():
     grid_width, grid_height = (9, 7)
 
     start_pos = Pose(0, 0, 0)
@@ -31,6 +66,74 @@ def test_empty_map_4x5():
 
     grid[start_pos.get_position()] = True
     navigate_grid(plan_output, grid, pos)
+
+    # for a map without obstacles the robot needs to visit all positions
+    for value in grid.values():
+        assert value == True
+
+
+def test_empty_map_8x4():
+    grid_width, grid_height = (8, 4)
+
+    start_pos = Pose(0, 0, 0)
+    pos = start_pos.copy()
+
+    grid = generate_grid(grid_width, grid_height)
+    plan_output = plan(grid_width, grid_height, start_pos)
+
+    grid[start_pos.get_position()] = True
+    navigate_grid(plan_output, grid, pos)
+
+    # for a map without obstacles the robot needs to visit all positions
+    for value in grid.values():
+        assert value == True
+
+
+def test_empty_map_8x5():
+    grid_width, grid_height = (8, 5)
+
+    start_pos = Pose(0, 0, 0)
+    pos = start_pos.copy()
+
+    grid = generate_grid(grid_width, grid_height)
+    plan_output = plan(grid_width, grid_height, start_pos)
+
+    grid[start_pos.get_position()] = True
+    navigate_grid(plan_output, grid, pos)
+
+    # for a map without obstacles the robot needs to visit all positions
+    for value in grid.values():
+        assert value == True
+
+
+def test_empty_map_6x6_starting_right_top():
+    grid_width, grid_height = (6, 6)
+
+    start_pose = Pose(6, 6, -90)
+    test_pose = start_pose.copy()
+
+    grid = generate_grid(grid_width, grid_height)
+    plan_output = plan(grid_width, grid_height, start_pose)
+
+    grid[start_pose.get_position()] = True
+    navigate_grid(plan_output, grid, test_pose)
+
+    # for a map without obstacles the robot needs to visit all positions
+    for value in grid.values():
+        assert value == True
+
+
+def test_empty_map_6x6_wrong_orientation():
+    grid_width, grid_height = (6, 6)
+
+    start_pose = Pose(0, 0, -90)
+    test_pose = start_pose.copy()
+
+    grid = generate_grid(grid_width, grid_height)
+    plan_output = plan(grid_width, grid_height, start_pose)
+
+    grid[start_pose.get_position()] = True
+    navigate_grid(plan_output, grid, test_pose)
 
     # for a map without obstacles the robot needs to visit all positions
     for value in grid.values():
