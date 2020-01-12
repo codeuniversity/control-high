@@ -18,8 +18,8 @@ def right_turn(orientation):
 def generate_grid(grid_dimension, obstacles=[]):
     keys_grid = []
 
-    for x in range(grid_dimension[0] + 1):
-        for y in range(grid_dimension[1] + 1):
+    for x in range(grid_width):
+        for y in range(grid_height):
             keys_grid.append((x, y))
 
     grid = dict.fromkeys(keys_grid, None)

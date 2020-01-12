@@ -20,13 +20,13 @@ class Layered2DMap(Map2D):
         return (self.layer_index, self.layer_index)
 
     def _get_left_upper_layer_corner(self):
-        return (self.layer_index, self.height - self.layer_index)
+        return (self.layer_index, self.height - self.layer_index - 1)
 
     def _get_right_upper_layer_corner(self):
-        return (self.width - self.layer_index, self.height - self.layer_index)
+        return (self.width - self.layer_index - 1, self.height - self.layer_index - 1)
 
     def _get_right_bottom_layer_corner(self):
-        return (self.width-self.layer_index, self.layer_index)
+        return (self.width - self.layer_index - 1, self.layer_index)
 
     def _update_all_layer_corners(self):
         self.left_bottom_layer_corner = self._get_left_bottom_layer_corner()
