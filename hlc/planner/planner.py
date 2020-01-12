@@ -57,9 +57,9 @@ def plan(grid_width, grid_height, start_pose=Pose(0, 0, 0), layer_index=0,):
 
     layerMap = Layered2DMap(grid_width, grid_height, layer_index)
 
-    max_layer_index = max(grid_dimension) // 2
+    max_layer_index = min(grid_height, grid_width) // 2
 
-    while layer_index < max_layer_index:
+    while layerMap.layer_index < max_layer_index:
 
         apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
 
@@ -68,8 +68,7 @@ def plan(grid_width, grid_height, start_pose=Pose(0, 0, 0), layer_index=0,):
             plan.extend(switch_layer_actions)
             update_position(robot_pose, switch_layer_actions)
             final_layer_position = get_new_final_layer_position(robot_pose)
-            layer_index += 1
-            layerMap.switchLayer(layer_index)
+            layerMap.switchLayer(layerMap.layer_index + 1)
         elif robot_pose.get_position() == layerMap.left_upper_layer_corner:
             apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
         elif robot_pose.get_position() == layerMap.right_upper_layer_corner:
@@ -77,13 +76,13 @@ def plan(grid_width, grid_height, start_pose=Pose(0, 0, 0), layer_index=0,):
         elif robot_pose.get_position() == layerMap.right_bottom_layer_corner:
             apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
 
-    if grid_dimension[0] != grid_dimension[1] and layer_index == max_layer_index:
-        if grid_dimension[0] % 2 == 1:
+    if grid_width != grid_height and layerMap.layer_index == max_layer_index:
+        if grid_width % 2 == 1:
             apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
-            while robot_pose.x < grid_dimension[0] - layer_index:
+            while robot_pose.x < grid_width - layerMap.layer_index:
                 apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
         else:
-            while robot_pose.y < grid_dimension[1] - layer_index:
+            while robot_pose.y < grid_height - layerMap.layer_index:
                 apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
 
     return plan
