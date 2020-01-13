@@ -7,16 +7,37 @@ Position = Tuple[int, int]
 
 
 class Map2D():
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, obstacle_positions: List[Position]):
         self.width = width
         self.height = height
+        self.obstacle_grid = self._generate_grid(obstacle_positions)
+
+    def _generate_grid(self, obstacles_positions: List[Position]):
+        keys_grid = []
+
+        for x in range(self.width):
+            for y in range(self.height):
+                keys_grid.append((x, y))
+
+        grid = dict.fromkeys(keys_grid, None)
+        for o in obstacles_positions:
+            grid[o] = False
+        return grid
+
+    def __getitem__(self, key):
+        return self.obstacle_grid[key]
+
+    def __setitem__(self, key, value):
+        self.obstacle_grid[key] = value
+
+    def obstacle_grid_values(self):
+        return self.obstacle_grid.values()
 
 
 class Layered2DMap(Map2D):
 
-    def __init__(self, width: int, height: int, layer_index: int):
-        self.width = width
-        self.height = height
+    def __init__(self, width: int, height: int, obstacle_positions: List[Position], layer_index=0):
+        super().__init__(width, height, obstacle_positions)
         self.layer_index = layer_index
         self._update_all_layer_corners()
 
@@ -66,7 +87,6 @@ class Corner():
 
 class Layer():
     def __init__(self, corner_positions: List[Position]):
-        self.corners: List[Corner]
         self.corners = []
 
         for position in corner_positions:
@@ -78,7 +98,7 @@ class Layer():
             self.corners[i].previous_corner = self.corners[i-1]
             self.corners[i].next_corner = self.corners[i+1]
 
-    def get_closest_corner(self, position: Position):
+    def get_closest_corner(self, position: Position) -> Corner:
         min_distance = float("inf")
         closest_corner = None
         for c in self.corners:
@@ -112,7 +132,7 @@ def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_inde
     plan = []
     final_layer_position = start_pose.add_tuple((1, 0))
 
-    layer_map = Layered2DMap(grid_width, grid_height, layer_index)
+    layer_map = Layered2DMap(grid_width, grid_height, [], layer_index)
 
     max_layer_index = min(grid_height, grid_width) // 2
 
