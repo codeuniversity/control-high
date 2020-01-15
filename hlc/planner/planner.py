@@ -39,29 +39,9 @@ class Layered2DMap(Map2D):
     def __init__(self, width: int, height: int, obstacle_positions: List[Position], layer_index=0):
         super().__init__(width, height, obstacle_positions)
         self.layer_index = layer_index
-        self._update_all_layer_corners()
-
-    def _get_left_bottom_layer_corner(self) -> Position:
-        return (self.layer_index, self.layer_index)
-
-    def _get_left_upper_layer_corner(self) -> Position:
-        return (self.layer_index, self.height - self.layer_index - 1)
-
-    def _get_right_upper_layer_corner(self) -> Position:
-        return (self.width - self.layer_index - 1, self.height - self.layer_index - 1)
-
-    def _get_right_bottom_layer_corner(self) -> Position:
-        return (self.width - self.layer_index - 1, self.layer_index)
-
-    def _update_all_layer_corners(self):
-        self.left_bottom_layer_corner = self._get_left_bottom_layer_corner()
-        self.left_upper_layer_corner = self._get_left_upper_layer_corner()
-        self.right_upper_layer_corner = self._get_right_upper_layer_corner()
-        self.right_bottom_layer_corner = self._get_right_bottom_layer_corner()
 
     def switchLayer(self, layer_index: int):
         self.layer_index = layer_index
-        self._update_all_layer_corners()
 
     def generate_rectangle_layer(self):
         min_width = self.layer_index
