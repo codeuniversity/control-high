@@ -99,18 +99,18 @@ def get_distance(point1: Position, point2: Position):
 def apply_actions(actions: List[HLAction], robot_pose: Pose, plan: List[HLAction]):
     for a in actions:
         plan.append(a)
-        robot_pose.update(a)
+        robot_pose.apply_action(a)
 
 
 def update_position(pose: Pose, new_actions: List[HLAction]):
     for action in new_actions:
-        pose.update(action)
+        pose.apply_action(action)
 
 
 def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_index=0) -> List[HLAction]:
     robot_pose = start_pose.copy()
     plan = []
-    final_layer_position = start_pose.add_tuple((1, 0))
+    final_layer_position = get_new_final_layer_position(robot_pose)
 
     layer_map = Layered2DMap(grid_width, grid_height, [], layer_index)
 
@@ -132,17 +132,17 @@ def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_inde
     if grid_width != grid_height and layer_map.layer_index == max_layer_index:
         if grid_width % 2 == 1:
             apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
-            while robot_pose.x < grid_width - layer_map.layer_index:
+            while robot_pose.position[0] < grid_width - layer_map.layer_index:
                 apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
         else:
-            while robot_pose.y < grid_height - layer_map.layer_index:
+            while robot_pose.position[1] < grid_height - layer_map.layer_index:
                 apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
 
     return plan
 
 
 def get_new_final_layer_position(robot_pose: Pose) -> Position:
-    return robot_pose.copy().add_tuple((1, 0))
+    return robot_pose.copy().add_position((1, 0))
 
 
 def progress_through_layer(layer: Layer, robot_pose: Pose, final_layer_position: Position) -> List[HLAction]:

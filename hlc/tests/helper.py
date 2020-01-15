@@ -24,7 +24,7 @@ def right_turn(orientation):
 def navigate_grid(plan: List[HLAction], grid: Map2D, position: Pose):
 
     for action in plan:
-        position.update(action)
+        position.apply_action(action)
         grid[position.get_position()] = True
 
 

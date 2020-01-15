@@ -1,67 +1,6 @@
 from enum import Enum
-
-
-class Pose():
-
-    def __init__(self, x, y, theta):
-        self.x = x
-        self.y = y
-        self.theta = theta
-        self._orientation_vector = self._get_orientation_vector()
-
-    def _get_orientation_vector(self):
-        if self.theta == 0:
-            return (0, 1)
-        elif self.theta == 90:
-            return (1, 0)
-        elif abs(self.theta) == 180:
-            return (0, -1)
-        elif self.theta == -90:
-            return (-1, 0)
-        else:
-            ValueError(
-                "Theta is outside of the defined range: (90,-90,180,-180,0): {}".format(self.theta))
-
-    def _update_orientation(self, new_theta):
-        self.theta += new_theta
-        if abs(self.theta) == 360:
-            self.theta = 0
-        elif self.theta == -270:
-            self.theta = 90
-        elif self.theta == 270:
-            self.theta = -90
-        self._orientation_vector = self._get_orientation_vector()
-
-    def update(self, hl_action):
-        self._update_orientation(hl_action.value[2])
-        if hl_action.name == "MOVE_FORWARD":
-            self.x += self._orientation_vector[0]
-            self.y += self._orientation_vector[1]
-        elif hl_action.name == "MOVE_BACKWARD":
-            self.x -= self._orientation_vector[0]
-            self.y -= self._orientation_vector[1]
-
-    def __eq__(self, value):
-        if isinstance(value, Pose):
-            return self.to_tuple() == value.tuple()
-        elif isinstance(value, tuple):
-            return self.to_tuple() == value
-        else:
-            raise TypeError(
-                "The operator == of Pose isn't defined \
-                    for an object of type: {}".format(type(value)))
-
-    def copy(self):
-        return Pose(self.x, self.y, self.theta)
-
-    def to_tuple(self):
-        return (self.x, self.y, self.theta)
-
-    def get_position(self):
-        return (self.x, self.y)
-
-    def add_tuple(self, other):
-        return(self.x + other[0], self.y + other[1])
+import numpy as np
+from math import cos, acos, sin, radians
 
 
 class HLAction(Enum):
@@ -71,26 +10,67 @@ class HLAction(Enum):
     MOVE_FORWARD = (0, 1, 0)
     MOVE_BACKWARD = (0, -1, 0)
 
-    MOVE_SIDEWAYS_RIGHT = (1, 0, 0)
-    MOVE_SIDEWAYS_LEFT = (-1, 0, 0)
 
+class Pose():
 
-def layer_pos(grid_dimension, layer):
-    left_layer = []
-    right_layer = []
-    top_layer = []
-    bottom_layer = []
+    def __init__(self, x: int, y: int, angle=0, orientation=None):
+        self.position = np.array([x, y], dtype=np.float64)
+        self.default_orientation = np.array([0, 1], dtype=np.float64)
+        if orientation is not None:
+            self.orientation = orientation
+        else:
+            self.orientation = self.default_orientation
+            self.orientation = self.rotate_vector(self.orientation, angle)
 
-    for i in range(grid_dimension[1]):
-        left_layer.append((layer, i))
+    def _get_rotation_matrix(self, angle: int):
+        rotate_clockwise = angle >= 0
+        rad_angle = radians(abs(angle))
+        rotation_matrix = np.array([
+            [round(cos(rad_angle), 5), -round(sin(rad_angle), 5)],
+            [round(sin(rad_angle), 5), round(cos(rad_angle))]
+        ])
+        if rotate_clockwise:
+            rotation_matrix = np.linalg.inv(rotation_matrix)
+        return rotation_matrix
 
-    for j in range(grid_dimension[1]):
-        right_layer.append(grid_dimension[1] - layer, j)
+    def _get_angle_between_vectors(self, vector1: np.ndarray, vector2: np.ndarray):
+        norm_vector1 = np.linalg.norm(vector1)
+        norm_vector2 = np.linalg.norm(vector2)
+        cos_angle = np.dot(vector1, vector2) / norm_vector1 * norm_vector2
+        return round(acos(cos_angle), 5)
 
-    for k in range(grid_dimension[0]):
-        top_layer.append(k, grid_dimension[0] - layer)
+    def rotate_vector(self, vector: np.ndarray, angle: int):
+        if angle == 0:
+            return vector
+        rotation_matrix = self._get_rotation_matrix(angle)
+        return np.dot(rotation_matrix, vector)
 
-    for l in range(grid_dimension[0]):
-        bottom_layer.append(l, layer)
+    def apply_action(self, action: HLAction):
+        sideway_movement = action.value[0]
+        straight_movement = action.value[1]
+        rotation = action.value[2]
 
-    return left_layer, right_layer, top_layer, bottom_layer
+        new_orientation = self.rotate_vector(self.orientation, rotation)
+        self.orientation = new_orientation
+
+        x_axis = self.rotate_vector(self.orientation, 90)
+        y_axis = self.orientation
+        movement = y_axis * straight_movement + x_axis * sideway_movement
+        self.position += movement
+
+    def __eq__(self, value):
+        position_equal = np.all(self.position == value.position)
+        orientation_equal = np.all(self.orientation == value.orientation)
+        return position_equal and orientation_equal
+
+    def copy(self):
+        return Pose(self.position[0], self.position[1], orientation=self.orientation)
+
+    def get_position(self):
+        return tuple(self.position)
+
+    def add_position(self, other):
+        return (
+            self.position[0] + other[0],
+            self.position[1] + other[1],
+        )
