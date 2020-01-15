@@ -1,38 +1,6 @@
 from enum import Enum
 
 
-class Position():
-    def __init__(self, coordinates=(0, 0)):
-        self.x, self.y = coordinates
-
-    def __eq__(self, value):
-        if isinstance(value, Position):
-            return self.current() == value.current()
-        elif isinstance(value, tuple):
-            return self.current() == value
-        else:
-            raise TypeError(
-                'Parameter has to be of class Position or of type tuple.')
-
-    def current(self):
-        return (self.x, self.y)
-
-    def copy(self):
-        return Position(self.current())
-
-    def update(self, action, operationIsAdd=True):
-        new_x, new_y = action
-
-        if operationIsAdd:
-            self.x += new_x
-            self.y += new_y
-        else:
-            self.x -= new_x
-            self.y -= new_y
-
-        return (self.x, self.y)
-
-
 class Pose():
 
     def __init__(self, x, y, theta):
