@@ -1,4 +1,3 @@
-from hlc.config.constants import *
 from hlc.planner.helper import Pose, HLAction
 from hlc.planner.planner import plan, Map2D
 from typing import List, Tuple
@@ -6,19 +5,6 @@ from typing import List, Tuple
 from multiprocessing import Process, Queue
 
 Position = Tuple[int, int]
-
-
-def right_turn(orientation):
-    if orientation == FORWARD:
-        orientation = RIGHT
-    elif orientation == RIGHT:
-        orientation = BACKWARD
-    elif orientation == BACKWARD:
-        orientation = LEFT
-    elif orientation == LEFT:
-        orientation = FORWARD
-
-    return orientation
 
 
 def navigate_grid(plan: List[HLAction], grid: Map2D, position: Pose):
