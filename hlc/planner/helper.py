@@ -33,12 +33,6 @@ class Pose():
             rotation_matrix = np.linalg.inv(rotation_matrix)
         return rotation_matrix
 
-    def _get_angle_between_vectors(self, vector1: np.ndarray, vector2: np.ndarray):
-        norm_vector1 = np.linalg.norm(vector1)
-        norm_vector2 = np.linalg.norm(vector2)
-        cos_angle = np.dot(vector1, vector2) / norm_vector1 * norm_vector2
-        return round(acos(cos_angle), 5)
-
     def rotate_vector(self, vector: np.ndarray, angle: int):
         if angle == 0:
             return vector

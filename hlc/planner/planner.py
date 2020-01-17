@@ -1,7 +1,9 @@
 # from hlc.config.constants import *
 from hlc.planner.helper import Pose, HLAction
 from typing import Tuple, List
-from math import sqrt
+from math import sqrt, acos, degrees
+import numpy as np
+import decimal
 
 Position = Tuple[int, int]
 
@@ -74,9 +76,10 @@ class Layer():
 
         self.corners[0].previous_corner = self.corners[-1]
         self.corners[-1].next_corner = self.corners[0]
-        for i in range(1, len(self.corners) - 1):
-            self.corners[i].previous_corner = self.corners[i-1]
+        for i in range(len(self.corners) - 1):
             self.corners[i].next_corner = self.corners[i+1]
+        for i in range(1, len(self.corners)):
+            self.corners[i].previous_corner = self.corners[i-1]
 
     def get_closest_corner(self, position: Position) -> Corner:
         min_distance = float("inf")
@@ -114,7 +117,7 @@ def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_inde
 
     layer_map = Layered2DMap(grid_width, grid_height, [], layer_index)
 
-    max_layer_index = min(grid_height, grid_width) // 2
+    max_layer_index = min(grid_height, grid_width) / 2
 
     while layer_map.layer_index < max_layer_index:
 
@@ -124,37 +127,81 @@ def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_inde
             layer, robot_pose, final_layer_position)
         plan.extend(actions)
 
-        switch_layer_actions = [HLAction.TURN_RIGHT, HLAction.MOVE_FORWARD]
-        apply_actions(switch_layer_actions, robot_pose, plan)
-        final_layer_position = get_new_final_layer_position(robot_pose)
         layer_map.switchLayer(layer_map.layer_index + 1)
 
-    if grid_width != grid_height and layer_map.layer_index == max_layer_index:
-        if grid_width % 2 == 1:
-            apply_actions([HLAction.TURN_RIGHT], robot_pose, plan)
-            while robot_pose.position[0] < grid_width - layer_map.layer_index:
-                apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
-        else:
-            while robot_pose.position[1] < grid_height - layer_map.layer_index:
-                apply_actions([HLAction.MOVE_FORWARD], robot_pose, plan)
-
     return plan
+
+
+def get_angle_between_vectors(vector1: np.ndarray, vector2: np.ndarray):
+    norm_vector1 = np.linalg.norm(vector1)
+    norm_vector2 = np.linalg.norm(vector2)
+    cos_angle = np.dot(vector1, vector2) / (norm_vector1 * norm_vector2)
+    return round(degrees(acos(cos_angle)), 5)
+
+
+def normalize_vector(vector: np.ndarray):
+    vector_norm = np.linalg.norm(vector)
+    return vector / vector_norm
 
 
 def get_new_final_layer_position(robot_pose: Pose) -> Position:
     return robot_pose.copy().add_position((1, 0))
 
 
+def align_orientation(vector, robot_pose):
+    y_axis = robot_pose.orientation
+    x_axis = robot_pose.rotate_vector(robot_pose.orientation, 90)
+
+    angle_y_axis = get_angle_between_vectors(vector, np.array(y_axis))
+    angle_x_axis = get_angle_between_vectors(vector, np.array(x_axis))
+    if angle_x_axis <= 90:
+        rotation_direction = 1
+    else:
+        rotation_direction = -1
+
+    actions = []
+    for _ in range(0, int(angle_y_axis), 90):
+        a = HLAction((0, 0, rotation_direction * 90))
+        robot_pose.apply_action(a)
+        actions.append(a)
+
+    return actions
+
+
+def move_to(position: Position, robot_pose: Pose) -> List[HLAction]:
+    x_difference = int(position[0] - robot_pose.position[0])
+    y_difference = int(position[1] - robot_pose.position[1])
+
+    actions = []
+
+    if x_difference != 0:
+        actions.extend(
+            align_orientation(np.array((x_difference, 0)), robot_pose)
+        )
+
+        for _ in range(abs(x_difference)):
+            a = HLAction.MOVE_FORWARD
+            robot_pose.apply_action(a)
+            actions.append(a)
+
+    if y_difference != 0:
+        actions.extend(
+            align_orientation(np.array((0, y_difference)), robot_pose)
+        )
+
+        for _ in range(abs(y_difference)):
+            a = HLAction.MOVE_FORWARD
+            robot_pose.apply_action(a)
+            actions.append(a)
+
+    return actions
+
+
 def progress_through_layer(layer: Layer, robot_pose: Pose, final_layer_position: Position) -> List[HLAction]:
     progress = []
-    while robot_pose.get_position() != final_layer_position:
-        apply_actions([HLAction.MOVE_FORWARD], robot_pose, progress)
-
-        if layer.corners[1].position == robot_pose.get_position():
-            apply_actions([HLAction.TURN_RIGHT], robot_pose, progress)
-        elif layer.corners[2].position == robot_pose.get_position():
-            apply_actions([HLAction.TURN_RIGHT], robot_pose, progress)
-        elif layer.corners[3].position == robot_pose.get_position():
-            apply_actions([HLAction.TURN_RIGHT], robot_pose, progress)
-
+    current_corner = layer.get_closest_corner(robot_pose.position)
+    for _ in range(len(layer.corners) + 1):
+        actions = move_to(current_corner.position, robot_pose)
+        progress.extend(actions)
+        current_corner = current_corner.next_corner
     return progress
