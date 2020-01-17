@@ -57,9 +57,13 @@ def create_solution_grid(grid_width: int, grid_height: int, start_pose: Pose, ob
     return grid
 
 
+def get_grid_value(grid: Map2D, position: Position):
+    return grid[position]
+
+
 def check_solution_grid(grid: Map2D, obstacles: List[Position]):
     for position in grid.obstacle_grid:
         if position in obstacles:
-            assert grid[position] == False
+            assert get_grid_value(grid, position) == False
         else:
-            assert grid[position] == True
+            assert get_grid_value(grid, position) == True
