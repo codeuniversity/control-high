@@ -1,41 +1,37 @@
-from hlc.planner import planner
-from hlc.planner.planner import plan
-from hlc.planner.helper import Pose, HLAction
-from hlc.tests.helper import create_solution_grid, check_solution_grid
+
 from typing import List, Tuple
+from hlc.tests.helper import create_solution_grid, check_solution_grid
+from hlc.planner.helper import Pose, HLAction
+from hlc.planner.planner import plan
+from hlc.planner import planner
 
 
-def test_empty_map_6x6():
+def test_evenly_square_empty_map():
     grid = create_solution_grid(6, 6, Pose(0, 0, 0))
     check_solution_grid(grid, [])
 
 
-def test_empty_map_8x6():
+def test_horizontal_rectangle_empty_map():
     grid = create_solution_grid(8, 6, Pose(0, 0, 0))
     check_solution_grid(grid, [])
 
 
-def test_empty_map_7x7():
+def test_vertical_rectangle_empty_map():
+    grid = create_solution_grid(4, 8, Pose(0, 0, 0))
+    check_solution_grid(grid, [])
+
+
+def test_empty_map_with_point_layer():
     grid = create_solution_grid(7, 7, Pose(0, 0, 0))
     check_solution_grid(grid, [])
 
 
-def test_empty_map_9x7():
+def test_empty_map_with_line_layer():
     grid = create_solution_grid(9, 7, Pose(0, 0, 0))
     check_solution_grid(grid, [])
 
 
-def test_empty_map_8x4():
-    grid = create_solution_grid(8, 4, Pose(0, 0, 0))
-    check_solution_grid(grid, [])
-
-
-def test_empty_map_8x5():
-    grid = create_solution_grid(8, 5, Pose(0, 0, 0))
-    check_solution_grid(grid, [])
-
-
-def test_empty_map_6x6_starting_right_top():
+def test_empty_map_6x6_different_starting_point():
     grid = create_solution_grid(6, 6, Pose(6, 6, -90))
     check_solution_grid(grid, [])
 
