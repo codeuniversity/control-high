@@ -113,7 +113,6 @@ def update_position(pose: Pose, new_actions: List[HLAction]):
 def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_index=0) -> List[HLAction]:
     robot_pose = start_pose.copy()
     plan = []
-    final_layer_position = get_new_final_layer_position(robot_pose)
 
     layer_map = Layered2DMap(grid_width, grid_height, [], layer_index)
 
@@ -123,8 +122,7 @@ def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_inde
 
         layer = layer_map.generate_rectangle_layer()
 
-        actions = progress_through_layer(
-            layer, robot_pose, final_layer_position)
+        actions = progress_through_layer(layer, robot_pose)
         plan.extend(actions)
 
         layer_map.switchLayer(layer_map.layer_index + 1)
@@ -197,7 +195,7 @@ def move_to(position: Position, robot_pose: Pose) -> List[HLAction]:
     return actions
 
 
-def progress_through_layer(layer: Layer, robot_pose: Pose, final_layer_position: Position) -> List[HLAction]:
+def progress_through_layer(layer: Layer, robot_pose: Pose) -> List[HLAction]:
     progress = []
     current_corner = layer.get_closest_corner(robot_pose.position)
     for _ in range(len(layer.corners) + 1):
