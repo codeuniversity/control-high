@@ -3,6 +3,59 @@ import numpy as np
 from math import cos, acos, sin, radians, degrees
 
 
+class HLAction(Enum):
+    TURN_RIGHT = (0, 0, 90)
+    TURN_LEFT = (0, 0, -90)
+
+    MOVE_FORWARD = (0, 1, 0)
+    MOVE_BACKWARD = (0, -1, 0)
+
+
+class Pose():
+
+    def __init__(self, x: int, y: int, angle=0, orientation=None):
+        self.position = Vector(x, y)
+        self.default_orientation = Vector(0, 1)
+        if orientation is not None:
+            self.orientation = orientation
+        else:
+            self.orientation = self.default_orientation
+            self.orientation = self.orientation.rotate(angle)
+
+    def apply_action(self, action: HLAction):
+        sideway_steps = action.value[0]
+        straight_steps = action.value[1]
+        rotation = action.value[2]
+
+        self.orientation = self.orientation.rotate(rotation)
+
+        x_axis = self.orientation.rotate(90)
+        y_axis = self.orientation
+
+        straight_movement = y_axis.multiply_with_scalar(straight_steps)
+        sideway_movement = x_axis.multiply_with_scalar(sideway_steps)
+        movement = straight_movement + sideway_movement
+
+        self.position += movement
+
+    def __eq__(self, value):
+        position_equal = np.all(self.position == value.position)
+        orientation_equal = np.all(self.orientation == value.orientation)
+        return position_equal and orientation_equal
+
+    def copy(self):
+        return Pose(self.position.get_x(), self.position.get_y(), orientation=self.orientation)
+
+    def get_position(self):
+        return tuple(self.position.coordinates)
+
+    def add_position(self, other):
+        return (
+            self.position[0] + other[0],
+            self.position[1] + other[1],
+        )
+
+
 class Vector():
     def __init__(self, x, y):
         self.coordinates = np.array((x, y))
@@ -62,56 +115,3 @@ class Vector():
     def multiply_with_scalar(self, scalar):
         new_x, new_y = self.coordinates * scalar
         return Vector(new_x, new_y)
-
-
-class HLAction(Enum):
-    TURN_RIGHT = (0, 0, 90)
-    TURN_LEFT = (0, 0, -90)
-
-    MOVE_FORWARD = (0, 1, 0)
-    MOVE_BACKWARD = (0, -1, 0)
-
-
-class Pose():
-
-    def __init__(self, x: int, y: int, angle=0, orientation=None):
-        self.position = Vector(x, y)
-        self.default_orientation = Vector(0, 1)
-        if orientation is not None:
-            self.orientation = orientation
-        else:
-            self.orientation = self.default_orientation
-            self.orientation = self.orientation.rotate(angle)
-
-    def apply_action(self, action: HLAction):
-        sideway_steps = action.value[0]
-        straight_steps = action.value[1]
-        rotation = action.value[2]
-
-        self.orientation = self.orientation.rotate(rotation)
-
-        x_axis = self.orientation.rotate(90)
-        y_axis = self.orientation
-
-        straight_movement = y_axis.multiply_with_scalar(straight_steps)
-        sideway_movement = x_axis.multiply_with_scalar(sideway_steps)
-        movement = straight_movement + sideway_movement
-
-        self.position += movement
-
-    def __eq__(self, value):
-        position_equal = np.all(self.position == value.position)
-        orientation_equal = np.all(self.orientation == value.orientation)
-        return position_equal and orientation_equal
-
-    def copy(self):
-        return Pose(self.position.get_x(), self.position.get_y(), orientation=self.orientation)
-
-    def get_position(self):
-        return tuple(self.position.coordinates)
-
-    def add_position(self, other):
-        return (
-            self.position[0] + other[0],
-            self.position[1] + other[1],
-        )
