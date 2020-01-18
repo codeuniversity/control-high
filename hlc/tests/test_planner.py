@@ -1,9 +1,5 @@
-
-from typing import List, Tuple
 from hlc.tests.helper import create_solution_grid, check_solution_grid
-from hlc.planner.helper import Pose, HLAction
-from hlc.planner.planner import plan
-from hlc.planner import planner
+from hlc.planner.helper import Pose
 
 
 def test_evenly_square_empty_map():
