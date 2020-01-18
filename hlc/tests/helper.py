@@ -1,5 +1,6 @@
 from hlc.planner.helper import Pose, HLAction
-from hlc.planner.planner import plan, Map2D
+from hlc.planner.planner import plan
+from hlc.planner.maps import Map2D
 from typing import List, Tuple
 
 from multiprocessing import Process, Queue
@@ -36,8 +37,9 @@ def create_solution_grid(grid_width: int, grid_height: int, start_pose: Pose, ob
     grid = Map2D(grid_width, grid_height, obstacle_positions)
     grid[start_pose.get_position()] = True
 
-    plan_output = generate_plan_with_timeout(
-        2, (grid_width, grid_height, start_pose.copy()))
+    # plan_output = generate_plan_with_timeout(
+    #    2, (grid_width, grid_height, start_pose.copy()))
+    plan_output = plan(grid_width, grid_height, start_pose.copy())
     navigate_grid(plan_output, grid, start_pose)
 
     return grid
