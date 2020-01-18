@@ -6,28 +6,20 @@ import numpy as np
 import decimal
 
 
-def apply_actions(actions: List[HLAction], robot_pose: Pose, plan: List[HLAction]):
-    for a in actions:
-        plan.append(a)
-        robot_pose.apply_action(a)
+def generate_plan(target_map: Layered2DMap, start_pose=Pose(0, 0, 0)) -> List[HLAction]:
 
+    max_layer_index = min(target_map.width, target_map.height) / 2
 
-def plan(grid_width: int, grid_height: int, start_pose=Pose(0, 0, 0), layer_index=0) -> List[HLAction]:
     robot_pose = start_pose.copy()
     plan = []
+    while target_map.layer_index < max_layer_index:
 
-    layer_map = Layered2DMap(grid_width, grid_height, [], layer_index)
-
-    max_layer_index = min(grid_height, grid_width) / 2
-
-    while layer_map.layer_index < max_layer_index:
-
-        layer = layer_map.generate_rectangle_layer()
+        layer = target_map.generate_rectangle_layer()
 
         actions = progress_through_layer(layer, robot_pose)
         plan.extend(actions)
 
-        layer_map.switchLayer(layer_map.layer_index + 1)
+        target_map.switchLayer(target_map.layer_index + 1)
 
     return plan
 
