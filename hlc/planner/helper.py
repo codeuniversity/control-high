@@ -38,6 +38,18 @@ class Pose():
 
         self.position += movement
 
+    def get_directional_angle_to(self, vector):
+        y_axis = self.orientation
+        x_axis = self.orientation.rotate(90)
+
+        angle_y_axis = vector.get_angle_to(y_axis)
+        angle_x_axis = vector.get_angle_to(x_axis)
+        if angle_x_axis <= 90:
+            rotation_direction = 1
+        else:
+            rotation_direction = -1
+        return angle_y_axis * rotation_direction
+
     def __eq__(self, value):
         position_equal = np.all(self.position == value.position)
         orientation_equal = np.all(self.orientation == value.orientation)

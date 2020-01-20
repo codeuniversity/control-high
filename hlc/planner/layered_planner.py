@@ -64,18 +64,15 @@ class LayeredPlanner():
         return actions
 
     def align_orientation(self, vector: Vector):
-        y_axis = self.pose.orientation
-        x_axis = self.pose.orientation.rotate(90)
+        angle = self.pose.get_directional_angle_to(vector)
 
-        angle_y_axis = vector.get_angle_to(y_axis)
-        angle_x_axis = vector.get_angle_to(x_axis)
-        if angle_x_axis <= 90:
+        if angle >= 0:
             rotation_direction = 1
         else:
             rotation_direction = -1
 
         actions = []
-        for _ in range(0, int(angle_y_axis), 90):
+        for _ in range(0, int(abs(angle)), 90):
             a = HLAction((0, 0, rotation_direction * 90))
             self.pose.apply_action(a)
             actions.append(a)
