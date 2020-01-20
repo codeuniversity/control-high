@@ -6,27 +6,25 @@ import numpy as np
 import decimal
 
 
-def generate_plan(target_map: Layered2DMap, start_pose=Pose(0, 0, 0)) -> List[HLAction]:
-    robot = Agent(start_pose)
+class LayeredPlanner():
+    def __init__(self, target_map: Layered2DMap, start_pose: Pose):
+        self.pose = start_pose.copy()
+        self.target_map = target_map
 
-    max_layer_index = min(target_map.width, target_map.height) / 2
+    def generate_plan(self) -> List[HLAction]:
+        max_layer_index = min(self.target_map.width,
+                              self.target_map.height) / 2
 
-    plan = []
-    while target_map.layer_index < max_layer_index:
+        plan = []
+        while self.target_map.layer_index < max_layer_index:
 
-        layer = target_map.generate_rectangle_layer()
+            layer = self.target_map.generate_rectangle_layer()
 
-        actions = robot.progress_through_layer(layer)
-        plan.extend(actions)
+            actions = self.progress_through_layer(layer)
+            plan.extend(actions)
 
-        target_map.switchLayer(target_map.layer_index + 1)
-
-    return plan
-
-
-class Agent():
-    def __init__(self, start_pose: Pose):
-        self.pose = start_pose
+            self.target_map.layer_index += 1
+        return plan
 
     def progress_through_layer(self, rectangle_layer: Layer) -> List[HLAction]:
         progress = []

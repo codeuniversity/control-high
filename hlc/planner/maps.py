@@ -20,10 +20,10 @@ class Map2D():
             grid[o] = False
         return grid
 
-    def __getitem__(self, key):
+    def get_obstacle(self, key):
         return self.obstacle_grid[key]
 
-    def __setitem__(self, key, value):
+    def set_obstacle(self, key, value):
         self.obstacle_grid[key] = value
 
     def obstacle_grid_values(self):
@@ -34,9 +34,6 @@ class Layered2DMap(Map2D):
 
     def __init__(self, width: int, height: int, obstacle_positions: List[Vector], layer_index=0):
         super().__init__(width, height, obstacle_positions)
-        self.layer_index = layer_index
-
-    def switchLayer(self, layer_index: int):
         self.layer_index = layer_index
 
     def generate_rectangle_layer(self):

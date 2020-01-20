@@ -1,5 +1,5 @@
 from hlc.planner.helper import Pose, HLAction
-from hlc.planner.planner import generate_plan
+from hlc.planner import LayeredPlanner
 from hlc.planner.maps import Map2D, Layered2DMap
 from typing import List, Tuple
 
@@ -8,35 +8,27 @@ from multiprocessing import Process, Queue
 Position = Tuple[int, int]
 
 
-def navigate_grid(plan: List[HLAction], grid: Map2D, position: Pose):
+def navigate_grid(plan: List[HLAction], test_map: Map2D, pose: Pose):
 
     for action in plan:
-        position.apply_action(action)
-        grid[position.get_position()] = True
-
-
-def process_wrapper(function, args, result_queue):
-    result = function(*args)
-    result_queue.put(result)
+        pose.apply_action(action)
+        test_map.set_obstacle(pose.get_position(), True)
 
 
 def create_solution_grid(grid_width: int, grid_height: int, start_pose: Pose, obstacle_positions=[]):
     test_map = Layered2DMap(grid_width, grid_height, obstacle_positions)
-    test_map[start_pose.get_position()] = True
+    test_map.set_obstacle(start_pose.get_position(), True)
+    planner = LayeredPlanner(test_map, start_pose)
+    plan = planner.generate_plan()
 
-    plan_output = generate_plan(test_map, start_pose.copy())
-    navigate_grid(plan_output, test_map, start_pose)
+    navigate_grid(plan, test_map, start_pose)
 
     return test_map
 
 
-def get_grid_value(grid: Map2D, position: Position):
-    return grid[position]
-
-
-def check_solution_grid(grid: Map2D, obstacles: List[Position]):
-    for position in grid.obstacle_grid:
+def check_solution_grid(test_map: Map2D, obstacles: List[Position]):
+    for position in test_map.obstacle_grid:
         if position in obstacles:
-            assert get_grid_value(grid, position) == False
+            assert test_map.get_obstacle(position) == False
         else:
-            assert get_grid_value(grid, position) == True
+            assert test_map.get_obstacle(position) == True
