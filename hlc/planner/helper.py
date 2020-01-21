@@ -22,14 +22,6 @@ class Pose():
             self.__orientation = default_orientation
             self.__orientation = self.__orientation.rotate(angle)
 
-    @property
-    def y(self):
-        return self.__position.y
-
-    @property
-    def x(self):
-        return self.__position.x
-
     def apply_action(self, action: HLAction):
         sideway_steps = action.value[0]
         straight_steps = action.value[1]
@@ -59,7 +51,15 @@ class Pose():
         return angle_y_axis * rotation_direction
 
     def copy(self) -> 'Pose':
-        return Pose(self.__position.x, self.__position.y, orientation=self.__orientation)
+        return Pose(self.x, self.y, orientation=self.__orientation)
+
+    @property
+    def y(self):
+        return self.__position.y
+
+    @property
+    def x(self):
+        return self.__position.x
 
 
 class Vector():
@@ -68,6 +68,53 @@ class Vector():
         # and therefore the Vector-class to encapsulated mutliple
         # types of data
         self.__coordinates = np.array((x, y))
+
+    def rotate(self,  angle: int) -> 'Vector':
+        if angle == 0:
+            return Vector(self.x, self.y)
+        rotation_matrix = self._get_rotation_matrix(angle)
+        new_coordinates = np.dot(rotation_matrix, self.__coordinates)
+        return Vector(new_coordinates[0], new_coordinates[1])
+
+    def _get_rotation_matrix(self, angle: int) -> np.ndarray:
+        rotate_clockwise = angle >= 0
+        rad_angle = radians(abs(angle))
+        rotation_matrix = np.array([
+            [round(cos(rad_angle), 5), -round(sin(rad_angle), 5)],
+            [round(sin(rad_angle), 5), round(cos(rad_angle))]
+        ])
+        if rotate_clockwise:
+            rotation_matrix = np.linalg.inv(rotation_matrix)
+        return rotation_matrix
+
+    def get_angle_to(self, other: 'Vector') -> float:
+        norm_of_self = self.get_norm()
+        norm_of_other = other.get_norm()
+        dot_product = np.dot(self.__coordinates, other.get_np_coordinates())
+        cos_angle = dot_product / norm_of_self * norm_of_other
+        angle = degrees(acos(cos_angle))
+        return round(angle, 5)
+
+    def get_distance_to(self, other: 'Vector') -> float:
+        vector_to_other = self.__coordinates - other.get_np_coordinates()
+        distance = np.sqrt(np.power(vector_to_other, 2).sum())
+        return distance
+
+    def normalize(self) -> 'Vector':
+        return self.__coordinates / self.get_norm()
+
+    def get_norm(self) -> float:
+        return np.linalg.norm(self.__coordinates)
+
+    def multiply_with_scalar(self, scalar):
+        new_x, new_y = self.__coordinates * scalar
+        return Vector(new_x, new_y)
+
+    def sum(self) -> float:
+        return np.sum(self.__coordinates)
+
+    def get_np_coordinates(self):
+        return np.copy(self.__coordinates)
 
     @property
     def x(self):
@@ -85,50 +132,6 @@ class Vector():
     def y(self, value: int):
         self.__coordinates[1] = value
 
-    def get_np_coordinates(self):
-        return np.copy(self.__coordinates)
-
-    def get_norm(self):
-        return np.linalg.norm(self.__coordinates)
-
-    def get_angle_to(self, other: 'Vector') -> float:
-        norm_of_self = self.get_norm()
-        norm_of_other = other.get_norm()
-        dot_product = np.dot(self.__coordinates, other.get_np_coordinates())
-        cos_angle = dot_product / norm_of_self * norm_of_other
-        angle = degrees(acos(cos_angle))
-        return round(angle, 5)
-
-    def normalize(self) -> 'Vector':
-        norm_of_self = np.linalg.norm(self.__coordinates)
-        return self.__coordinates / norm_of_self
-
-    def get_distance_to(self, other: 'Vector') -> float:
-        vector_to_other = self.__coordinates - other.get_np_coordinates()
-        distance = np.sqrt(np.power(vector_to_other, 2).sum())
-        return distance
-
-    def _get_rotation_matrix(self, angle: int) -> np.ndarray:
-        rotate_clockwise = angle >= 0
-        rad_angle = radians(abs(angle))
-        rotation_matrix = np.array([
-            [round(cos(rad_angle), 5), -round(sin(rad_angle), 5)],
-            [round(sin(rad_angle), 5), round(cos(rad_angle))]
-        ])
-        if rotate_clockwise:
-            rotation_matrix = np.linalg.inv(rotation_matrix)
-        return rotation_matrix
-
-    def rotate(self,  angle: int) -> 'Vector':
-        if angle == 0:
-            return Vector(self.x, self.y)
-        rotation_matrix = self._get_rotation_matrix(angle)
-        new_coordinates = np.dot(rotation_matrix, self.__coordinates)
-        return Vector(new_coordinates[0], new_coordinates[1])
-
-    def sum(self) -> float:
-        return np.sum(self.__coordinates)
-
     def __iadd__(self, other: 'Vector') -> 'Vector':
         self.__coordinates = self.__coordinates + other.get_np_coordinates()
         return self
@@ -136,7 +139,3 @@ class Vector():
     def __add__(self, other: 'Vector') -> 'Vector':
         new_coordinates = self.__coordinates + other.get_np_coordinates()
         return Vector(new_coordinates[0], new_coordinates[1])
-
-    def multiply_with_scalar(self, scalar):
-        new_x, new_y = self.__coordinates * scalar
-        return Vector(new_x, new_y)
