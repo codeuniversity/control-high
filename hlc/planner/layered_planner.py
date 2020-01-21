@@ -56,7 +56,7 @@ class LayeredPlanner():
 
         return actions
 
-    def move_along_1dimensional_vector(self, vector: Vector):
+    def move_along_1dimensional_vector(self, vector: Vector) -> List[HLAction]:
         actions = []
         actions.extend(self.align_orientation(vector))
         for _ in range(abs(vector.sum())):
@@ -65,7 +65,7 @@ class LayeredPlanner():
             actions.append(move_forward)
         return actions
 
-    def align_orientation(self, vector: Vector):
+    def align_orientation(self, vector: Vector) -> List[HLAction]:
         angle = self.__pose.get_directional_angle_to(vector)
 
         if angle >= 0:

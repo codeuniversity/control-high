@@ -46,7 +46,7 @@ class Pose():
 
         self.__position += movement
 
-    def get_directional_angle_to(self, vector):
+    def get_directional_angle_to(self, vector: 'Vector') -> int:
         y_axis = self.__orientation
         x_axis = self.__orientation.rotate(90)
 
@@ -58,12 +58,15 @@ class Pose():
             rotation_direction = -1
         return angle_y_axis * rotation_direction
 
-    def copy(self):
+    def copy(self) -> 'Pose':
         return Pose(self.__position.x, self.__position.y, orientation=self.__orientation)
 
 
 class Vector():
     def __init__(self, x, y):
+        # Types for x,y are not specified to allow dynamic typing
+        # and therefore the Vector-class to encapsulated mutliple
+        # types of data
         self.__coordinates = np.array((x, y))
 
     @property
@@ -88,7 +91,7 @@ class Vector():
     def get_norm(self):
         return np.linalg.norm(self.__coordinates)
 
-    def get_angle_to(self, other):
+    def get_angle_to(self, other: 'Vector') -> float:
         norm_of_self = self.get_norm()
         norm_of_other = other.get_norm()
         dot_product = np.dot(self.__coordinates, other.get_np_coordinates())
@@ -96,16 +99,16 @@ class Vector():
         angle = degrees(acos(cos_angle))
         return round(angle, 5)
 
-    def normalize(self):
+    def normalize(self) -> 'Vector':
         norm_of_self = np.linalg.norm(self.__coordinates)
         return self.__coordinates / norm_of_self
 
-    def get_distance_to(self, other):
+    def get_distance_to(self, other: 'Vector') -> float:
         vector_to_other = self.__coordinates - other.get_np_coordinates()
         distance = np.sqrt(np.power(vector_to_other, 2).sum())
         return distance
 
-    def _get_rotation_matrix(self, angle: int):
+    def _get_rotation_matrix(self, angle: int) -> np.ndarray:
         rotate_clockwise = angle >= 0
         rad_angle = radians(abs(angle))
         rotation_matrix = np.array([
@@ -116,21 +119,21 @@ class Vector():
             rotation_matrix = np.linalg.inv(rotation_matrix)
         return rotation_matrix
 
-    def rotate(self,  angle: int):
+    def rotate(self,  angle: int) -> 'Vector':
         if angle == 0:
             return Vector(self.x, self.y)
         rotation_matrix = self._get_rotation_matrix(angle)
         new_coordinates = np.dot(rotation_matrix, self.__coordinates)
         return Vector(new_coordinates[0], new_coordinates[1])
 
-    def sum(self):
+    def sum(self) -> float:
         return np.sum(self.__coordinates)
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: 'Vector') -> 'Vector':
         self.__coordinates = self.__coordinates + other.get_np_coordinates()
         return self
 
-    def __add__(self, other):
+    def __add__(self, other: 'Vector') -> 'Vector':
         new_coordinates = self.__coordinates + other.get_np_coordinates()
         return Vector(new_coordinates[0], new_coordinates[1])
 

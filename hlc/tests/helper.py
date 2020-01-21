@@ -15,7 +15,7 @@ def navigate_grid(plan: List[HLAction], test_map: Map2D, pose: Pose):
         test_map.set_obstacle((pose.x, pose.y), True)
 
 
-def create_solution_grid(grid_width: int, grid_height: int, start_pose: Pose, obstacle_positions=[]):
+def create_solution_grid(grid_width: int, grid_height: int, start_pose: Pose, obstacle_positions=[]) -> Layered2DMap:
     test_map = Layered2DMap(grid_width, grid_height, obstacle_positions)
     planner = LayeredPlanner(test_map, start_pose)
     plan = planner.generate_plan()
