@@ -9,15 +9,14 @@ Position = Tuple[int, int]
 
 
 def navigate_grid(plan: List[HLAction], test_map: Map2D, pose: Pose):
-
+    test_map.set_obstacle((pose.x, pose.y), True)
     for action in plan:
         pose.apply_action(action)
-        test_map.set_obstacle(pose.get_position(), True)
+        test_map.set_obstacle((pose.x, pose.y), True)
 
 
 def create_solution_grid(grid_width: int, grid_height: int, start_pose: Pose, obstacle_positions=[]):
     test_map = Layered2DMap(grid_width, grid_height, obstacle_positions)
-    test_map.set_obstacle(start_pose.get_position(), True)
     planner = LayeredPlanner(test_map, start_pose)
     plan = planner.generate_plan()
 

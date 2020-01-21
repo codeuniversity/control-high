@@ -8,27 +8,29 @@ import decimal
 
 class LayeredPlanner():
     def __init__(self, target_map: Layered2DMap, start_pose: Pose):
-        self.pose = start_pose.copy()
-        self.target_map = target_map
+        self.__pose = start_pose.copy()
+        self.__target_map = target_map
 
     def generate_plan(self) -> List[HLAction]:
-        max_layer_index = min(self.target_map.width,
-                              self.target_map.height) / 2
+        max_layer_index = min(self.__target_map.width,
+                              self.__target_map.height) / 2
 
         plan = []
-        while self.target_map.layer_index < max_layer_index:
+        while self.__target_map.layer_index < max_layer_index:
 
-            layer = self.target_map.generate_rectangle_layer()
+            layer = self.__target_map.generate_rectangle_layer()
 
             actions = self.progress_through_layer(layer)
             plan.extend(actions)
 
-            self.target_map.layer_index += 1
+            self.__target_map.layer_index += 1
         return plan
 
     def progress_through_layer(self, rectangle_layer: Layer) -> List[HLAction]:
         progress = []
-        current_corner = rectangle_layer.get_closest_corner(self.pose.position)
+        current_corner = rectangle_layer.get_closest_corner(
+            Vector(self.__pose.x, self.__pose.y)
+        )
         for _ in range(len(rectangle_layer.corners) + 1):
             actions = self.move_to(current_corner.position)
             progress.extend(actions)
@@ -36,8 +38,8 @@ class LayeredPlanner():
         return progress
 
     def move_to(self, position: Vector) -> List[HLAction]:
-        x_difference = int(position.get_x() - self.pose.position.get_x())
-        y_difference = int(position.get_y() - self.pose.position.get_y())
+        x_difference = int(position.x - self.__pose.x)
+        y_difference = int(position.y - self.__pose.y)
 
         actions = []
 
@@ -59,12 +61,12 @@ class LayeredPlanner():
         actions.extend(self.align_orientation(vector))
         for _ in range(abs(vector.sum())):
             move_forward = HLAction.MOVE_FORWARD
-            self.pose.apply_action(move_forward)
+            self.__pose.apply_action(move_forward)
             actions.append(move_forward)
         return actions
 
     def align_orientation(self, vector: Vector):
-        angle = self.pose.get_directional_angle_to(vector)
+        angle = self.__pose.get_directional_angle_to(vector)
 
         if angle >= 0:
             rotation_direction = 1
@@ -74,7 +76,7 @@ class LayeredPlanner():
         actions = []
         for _ in range(0, int(abs(angle)), 90):
             a = HLAction((0, 0, rotation_direction * 90))
-            self.pose.apply_action(a)
+            self.__pose.apply_action(a)
             actions.append(a)
 
         return actions
