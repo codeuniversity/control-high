@@ -42,25 +42,25 @@ class LayeredPlanner():
         actions = []
 
         if x_difference != 0:
+            x_movement = Vector(x_difference, 0)
             actions.extend(
-                self.align_orientation(Vector(x_difference, 0))
+                self.move_along_1dimensional_vector(x_movement)
             )
-
-            for _ in range(abs(x_difference)):
-                a = HLAction.MOVE_FORWARD
-                self.pose.apply_action(a)
-                actions.append(a)
-
         if y_difference != 0:
+            y_movement = Vector(0, y_difference)
             actions.extend(
-                self.align_orientation(Vector(0, y_difference))
+                self.move_along_1dimensional_vector(y_movement)
             )
 
-            for _ in range(abs(y_difference)):
-                a = HLAction.MOVE_FORWARD
-                self.pose.apply_action(a)
-                actions.append(a)
+        return actions
 
+    def move_along_1dimensional_vector(self, vector: Vector):
+        actions = []
+        actions.extend(self.align_orientation(vector))
+        for _ in range(abs(vector.sum())):
+            move_forward = HLAction.MOVE_FORWARD
+            self.pose.apply_action(move_forward)
+            actions.append(move_forward)
         return actions
 
     def align_orientation(self, vector: Vector):

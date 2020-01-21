@@ -50,22 +50,11 @@ class Pose():
             rotation_direction = -1
         return angle_y_axis * rotation_direction
 
-    def __eq__(self, value):
-        position_equal = np.all(self.position == value.position)
-        orientation_equal = np.all(self.orientation == value.orientation)
-        return position_equal and orientation_equal
-
     def copy(self):
         return Pose(self.position.get_x(), self.position.get_y(), orientation=self.orientation)
 
     def get_position(self):
         return tuple(self.position.coordinates)
-
-    def add_position(self, other):
-        return (
-            self.position[0] + other[0],
-            self.position[1] + other[1],
-        )
 
 
 class Vector():
@@ -109,6 +98,9 @@ class Vector():
         rotation_matrix = self._get_rotation_matrix(angle)
         new_coordinates = np.dot(rotation_matrix, self.coordinates)
         return Vector(new_coordinates[0], new_coordinates[1])
+
+    def sum(self):
+        return np.sum(self.coordinates)
 
     def get_x(self):
         return self.coordinates[0]
