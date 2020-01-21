@@ -26,7 +26,7 @@ def create_solution_grid(grid_width: int, grid_height: int, start_pose: Pose, ob
 
 
 def check_solution_grid(test_map: Map2D, obstacles: List[Position]):
-    for position in test_map.obstacle_grid:
+    for position in test_map.get_all_positions():
         if position in obstacles:
             assert test_map.get_obstacle(position) == False
         else:
